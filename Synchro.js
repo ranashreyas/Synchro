@@ -14,6 +14,8 @@ window.onload=function(){
 		const dropzone = event.target;
 		if(dropzone.className.toString().localeCompare("example-draggable") != 0){
 			dropzone.appendChild(draggableElement);
+		} else{
+			document.getElementById("todo").appendChild(draggableElement);
 		}
 		event
 			.dataTransfer
@@ -42,6 +44,8 @@ window.onload=function(){
 		console.log(dropzone.className.toString());
 		if(dropzone.className.toString().localeCompare("example-draggable") != 0){
 			dropzone.appendChild(draggableElement);
+		} else{
+			document.getElementById("in_progress").appendChild(draggableElement);
 		}
 
 		
@@ -69,6 +73,8 @@ window.onload=function(){
 		const dropzone = event.target;
 		if(dropzone.className.toString().localeCompare("example-draggable") != 0){
 			dropzone.appendChild(draggableElement);
+		} else{
+			document.getElementById("Completed").appendChild(draggableElement);
 		}
 		event
 			.dataTransfer
@@ -126,22 +132,21 @@ window.onload=function(){
 		}
 	});
 
-	// document.getElementById("checkStorage").addEventListener("click", function(){
-	// 	chrome.storage.sync.get("todo", function(data) {
-	// 		console.log(data);
-	// 	});
-	// 	chrome.storage.sync.get("in_progress", function(data) {
-	// 		console.log(data);
-	// 	});
-	// 	chrome.storage.sync.get("Completed", function(data) {
-	// 		console.log(data);
-	// 	});
-	// 	chrome.storage.sync.get("id", function(data) {
-	// 		console.log(data);
-	// 	});
-		
-	// });
+	document.onkeypress = function(evt) {
+		evt = evt || window.event;
+		var charCode = evt.keyCode || evt.which;
+		// var charStr = String.fromCharCode(charCode);
 
+		myId += 1;
+		if(charCode == 13 && document.getElementById("fname").value.toString().length > 0){
+			var val = document.getElementById("fname").value;
+			document.getElementById("fname").value = "";
+
+			createBlock("todo", val);
+
+			setAllIdData();
+		}
+	};
 
 	chrome.storage.sync.get("todo", function(data) {
 		var i;
@@ -165,6 +170,25 @@ window.onload=function(){
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;
 	});
+
+	// document.getElementById("checkStorage").addEventListener("click", function(){
+	// 	chrome.storage.sync.get("todo", function(data) {
+	// 		console.log(data);
+	// 	});
+	// 	chrome.storage.sync.get("in_progress", function(data) {
+	// 		console.log(data);
+	// 	});
+	// 	chrome.storage.sync.get("Completed", function(data) {
+	// 		console.log(data);
+	// 	});
+	// 	chrome.storage.sync.get("id", function(data) {
+	// 		console.log(data);
+	// 	});
+		
+	// });
+
+
+	
 
 
 	
