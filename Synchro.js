@@ -1,5 +1,5 @@
 var myId = 0;
-window.onload=function() {
+window.onload = function() {
 	var states = ["todo", "in_progress", "completed"];
 
 	var state;
