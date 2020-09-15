@@ -1,13 +1,13 @@
-.example-parent {
+.parent {
 	/* border: 2px solid #DFA612; */
 	/* color: rgb(161, 150, 150); */
 	display: flex;
 	font-family: sans-serif;
 	font-weight: bold;
 	width: 700px;
-  }
+}
 
-  .example-dropzone {
+.dropzone {
 	background-color: #ffffff;
 	/* flex-basis: 100%;
 	flex-grow: 1; */
@@ -24,9 +24,9 @@
 	shape-rendering: auto;
 	flex-basis: 100%;
 	flex-grow: 1;
-  }
+}
 
-  .example-draggable {
+.task {
 	background-color: #ddf4ff;
 	border: 2px solid #B6E6FC;
 	border-radius: 20px;
@@ -35,18 +35,16 @@
 	margin-top: 10px;
 	padding: 10px;
 	cursor: move;
-  }
-  
-  .example-origin {
+}
+
+.example-origin {
 	background-color: #fae77d;
 	flex-basis: 100%;
 	flex-grow: 1;
 	padding: 10px;
-  }
-  
-  
+}
 
-  .task-name {
+.task-name {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -61,9 +59,9 @@
 	padding: 10px;
 	width: 200px;
 	cursor: text;
-  }
+}
 
-  .add-task {
+.add-task {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -78,9 +76,9 @@
 	width: 200px;
 	cursor: pointer;
 	text-align: center;
-  }
+}
 
-  .delete-task {
+.delete-task {
 	display: block;
 	/* margin-left: auto;
 	margin-right: auto; */
@@ -98,13 +96,34 @@
 
 	position: fixed;
 	right: 20px;
-  	top: 20px;
-  }
-  
-  
-  .example-dropzone-2 {
+	top: 20px;
+}
+
+.example-dropzone-2 {
 	background-color: #5b78b6;
 	flex-basis: 100%;
 	flex-grow: 1;
 	padding: 10px;
-  }
+}
+
+.top_bar {
+    box-sizing: border-box;
+    height: 44px;
+    background-color: #fff;
+    top: 0;
+    position: fixed;
+    z-index: 200;
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    justify-content: center;
+    width: 100vw;
+    border-bottom: 1px solid transparent;
+    background-color: #db4c3f;
+    -webkit-transition: height .2s ease-in;
+    transition: height .2s ease-in;
+    padding-left: 42px;
+    padding-right: 42px;
+}

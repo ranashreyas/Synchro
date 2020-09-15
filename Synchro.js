@@ -1,94 +1,37 @@
 var myId = 0;
-window.onload=function(){
-	
-	document.getElementById("todo").addEventListener("dragover", function(event){
-		event.preventDefault();
-	});
-	document.getElementById("todo").addEventListener("drop", function(event){
-		event.preventDefault();
-		const id = event
-			// .originalEvent
-			.dataTransfer
-			.getData("text");
-		const draggableElement = document.getElementById(id);
-		const dropzone = event.target;
-		if(dropzone.className.toString().localeCompare("example-draggable") != 0){
-			dropzone.appendChild(draggableElement);
-		} else{
-			document.getElementById("todo").appendChild(draggableElement);
-		}
-		event
-			.dataTransfer
-			.clearData();
+window.onload=function() {
+	var states = ["todo", "in_progress", "completed"];
 
-		saveData();
+	var state;
+	for (state of states) {
+		document.getElementById(state).addEventListener("dragover", function(event){
+			event.preventDefault();
+		});
 
-		document.getElementById("trash-icon").style.width = "30px";
-		document.getElementById("trash-icon").style.height = "30px";
-	});
+		document.getElementById(state).addEventListener("drop", function(event){
+			event.preventDefault();
+			const id = event
+				.dataTransfer
+				.getData("text");
 
+			const taskElement = document.getElementById(id);
+			document.getElementById(event.target.id).appendChild(taskElement);
 
+			event
+			  	.dataTransfer
+			  	.clearData();
 
-	document.getElementById("in_progress").addEventListener("dragover", function(event){
-		event.preventDefault();
-	});
-	document.getElementById("in_progress").addEventListener("drop", function(event){
-		event.preventDefault();
-		// console.log(event.dataTransfer.getData("text"));
-		const id = event
-			.dataTransfer
-			.getData("text");
-		const draggableElement = document.getElementById(id);
-		const dropzone = event.target;
+			saveData();
 
-		console.log(dropzone.className.toString());
-		if(dropzone.className.toString().localeCompare("example-draggable") != 0){
-			dropzone.appendChild(draggableElement);
-		} else{
-			document.getElementById("in_progress").appendChild(draggableElement);
-		}
-
-		
-		event
-			.dataTransfer
-			.clearData();
-		saveData();
-
-		document.getElementById("trash-icon").style.width = "30px";
-		document.getElementById("trash-icon").style.height = "30px";
-	});
-
-
-
-	document.getElementById("Completed").addEventListener("dragover", function(event){
-		event.preventDefault();
-	});
-	document.getElementById("Completed").addEventListener("drop", function(event){
-		event.preventDefault();
-		const id = event
-			// .originalEvent
-			.dataTransfer
-			.getData("text");
-		const draggableElement = document.getElementById(id);
-		const dropzone = event.target;
-		if(dropzone.className.toString().localeCompare("example-draggable") != 0){
-			dropzone.appendChild(draggableElement);
-		} else{
-			document.getElementById("Completed").appendChild(draggableElement);
-		}
-		event
-			.dataTransfer
-			.clearData();
-		saveData();
-
-		document.getElementById("trash-icon").style.width = "30px";
-		document.getElementById("trash-icon").style.height = "30px";
-	});
-
+			document.getElementById("trash-icon").style.width = "30px";
+			document.getElementById("trash-icon").style.height = "30px";
+		});
+	}
 
 	document.getElementById("deleteTask").addEventListener("dragover", function(event){
 		event.preventDefault();
 	});
+
 	document.getElementById("deleteTask").addEventListener("dragenter", function(event){
 		document.getElementById("trash-icon").style.width = "35px";
 		document.getElementById("trash-icon").style.height = "35px";
@@ -103,9 +46,9 @@ window.onload=function(){
 			// .originalEvent
 			.dataTransfer
 			.getData("text");
-		const draggableElement = document.getElementById(id);
+		const taskElement = document.getElementById(id);
 		const dropzone = event.target;
-		dropzone.appendChild(draggableElement);
+		dropzone.appendChild(taskElement);
 		document.getElementById(id).remove();
 		event
 			.dataTransfer
@@ -114,17 +57,15 @@ window.onload=function(){
 		document.getElementById("trash-icon").style.width = "30px";
 		document.getElementById("trash-icon").style.height = "30px";
 	});
-
-
 	
 	document.getElementById("add-task").addEventListener("click", function(){
 		myId += 1;
 
 		// setAllIdData();
 
-		if(document.getElementById("fname").value.toString().length > 0){
-			var val = document.getElementById("fname").value;
-			document.getElementById("fname").value = "";
+		if(document.getElementById("task").value.toString().length > 0){
+			var val = document.getElementById("task").value;
+			document.getElementById("task").value = "";
 
 			createBlock("todo", val);
 
@@ -138,9 +79,9 @@ window.onload=function(){
 		// var charStr = String.fromCharCode(charCode);
 
 		myId += 1;
-		if(charCode == 13 && document.getElementById("fname").value.toString().length > 0){
-			var val = document.getElementById("fname").value;
-			document.getElementById("fname").value = "";
+		if(charCode == 13 && document.getElementById("task").value.toString().length > 0){
+			var val = document.getElementById("task").value;
+			document.getElementById("task").value = "";
 
 			createBlock("todo", val);
 
@@ -160,10 +101,10 @@ window.onload=function(){
 			createBlock("in_progress", data.in_progress[i]);
 		}
 	});
-	chrome.storage.sync.get("Completed", function(data) {
+	chrome.storage.sync.get("completed", function(data) {
 		var i;
-		for(i = 0; i < data.Completed.length; i+=1){
-			createBlock("Completed", data.Completed[i]);
+		for(i = 0; i < data.completed.length; i+=1){
+			createBlock("completed", data.completed[i]);
 		}
 		setAllIdData();
 	});
@@ -178,7 +119,7 @@ window.onload=function(){
 	// 	chrome.storage.sync.get("in_progress", function(data) {
 	// 		console.log(data);
 	// 	});
-	// 	chrome.storage.sync.get("Completed", function(data) {
+	// 	chrome.storage.sync.get("completed", function(data) {
 	// 		console.log(data);
 	// 	});
 	// 	chrome.storage.sync.get("id", function(data) {
@@ -186,14 +127,8 @@ window.onload=function(){
 	// 	});
 		
 	// });
-
-
-	
-
-
 	
 }
-
 
 function createBlock(location, val){
 	const div = document.createElement('div');
@@ -202,10 +137,17 @@ function createBlock(location, val){
 
 	div.id = (val.toString() + "-" + myId.toString(10));
 
-	div.setAttribute("class", "example-draggable");
+	div.setAttribute("class", "task");
 	div.setAttribute("draggable", true);
+
+	div.addEventListener("dblclick", function(event) {
+		div.setAttribute("contenteditable", true);
+	});
+
+	div.addEventListener("clickout", function(event) {
+		div.setAttribute("contenteditable", false);
+	});
 	// div.setAttribute("contenteditable", true);
-	
 	
 	document.getElementById(location).appendChild(div);
 
@@ -215,7 +157,7 @@ function createBlock(location, val){
 
 function setAllIdData(){
 	console.log("setting all the data!!!")
-	var items = document.getElementsByClassName("example-draggable");
+	var items = document.getElementsByClassName("task");
 	var i;
 	for (i = 0; i < items.length; i+=1){
 		items[i].addEventListener("dragstart", function(event){
@@ -248,11 +190,11 @@ function saveData(){
 
 
 	todoArray = [];
-	for(var currDiv = 0; currDiv < document.getElementById('Completed').children.length; currDiv += 1){
-		todoArray.push(document.getElementById('Completed').children[currDiv].innerHTML);
+	for(var currDiv = 0; currDiv < document.getElementById('completed').children.length; currDiv += 1){
+		todoArray.push(document.getElementById('completed').children[currDiv].innerHTML);
 	}
 
-	chrome.storage.sync.set({'Completed' : todoArray}, function() {
+	chrome.storage.sync.set({'completed' : todoArray}, function() {
 	});
 
 
