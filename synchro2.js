@@ -3,20 +3,15 @@ window.onload = function() {
 
 	$('.dropzone').sortable({
 		connectWith: '.dropzone',
-	}).droppable({greedy: true})
-
-	$('.dropzone').droppable({
-		drop: function ( event, ui ) {			
-			// alert(event.children + " " + ui.children);
-			saveData();
-		}
+		stop: function(e,ui){
+			saveData(e);
+    	}
 	});
 
 	$("#deleteTask").droppable({
 		hoverClass: "trash-hover",
 		drop: function ( event, ui ) {			
 			ui.draggable.remove();
-			saveData();
 		}
 	});
 
@@ -41,15 +36,12 @@ window.onload = function() {
 	document.getElementById("add-task").addEventListener("click", function(){
 		myId += 1;
 
-		// setAllIdData();
-
 		if(document.getElementById("task").value.toString().length > 0){
 			var val = document.getElementById("task").value;
 			document.getElementById("task").value = "";
 
 			createBlock("todo", val);
 			saveData();
-			// setAllIdData();
 		}
 	});
 
@@ -94,24 +86,15 @@ window.onload = function() {
 	});
 
 	document.getElementById("checkStorage").addEventListener("click", function(){
-		chrome.storage.sync.get("todo", function(data) {
-			console.log(data);
-		});
-		chrome.storage.sync.get("in_progress", function(data) {
-			console.log(data);
-		});
-		chrome.storage.sync.get("completed", function(data) {
-			console.log(data);
-		});
-		chrome.storage.sync.get("id", function(data) {
-			console.log(data);
-		});
-		
+		checkStorage();
 	});
 	
+	document.getElementById("clearData").addEventListener("click", function() {
+		clearData();
+	});
 }
 
-function createBlock(location, val){
+function createBlock(location, val) {
 	const myDiv = document.createElement('div');
 	myDiv.innerHTML = val.toString();
 	// const newContent = document.createTextNode(val.toString());
@@ -134,54 +117,43 @@ function createBlock(location, val){
 	document.getElementById(location).appendChild(myDiv);
 }
 
-
-// function setAllIdData(){
-// 	console.log("setting all the data!!!")
-// 	var items = document.getElementsByClassName("task");
-// 	var i;
-// 	for (i = 0; i < items.length; i+=1){
-// 		items[i].addEventListener("dragstart", function(event){
-// 			event
-// 				.dataTransfer
-// 				.setData('text/plain', event.target.id);
-// 		});
-// 	}
-// 	// saveData();
-// }
-
-function saveData(){
-
-	var todoArray = [];
-	for(var currDiv = 0; currDiv < document.getElementById('todo').children.length; currDiv += 1){
-		todoArray.push(document.getElementById('todo').children[currDiv].innerHTML);
+function saveData(event) {
+	var arr1 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
+		arr1.push(document.getElementById("todo").children[currDiv].innerHTML);
 	}
 
-	chrome.storage.sync.set({'todo' : todoArray}, function() {
-		console.log(todoArray);
-	});
-
-
-	todoArray = [];
-	for(var currDiv = 0; currDiv < document.getElementById('in_progress').children.length; currDiv += 1){
-		todoArray.push(document.getElementById('in_progress').children[currDiv].innerHTML);
+	var arr2 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
+		arr2.push(document.getElementById("in_progress").children[currDiv].innerHTML);
 	}
 
-	chrome.storage.sync.set({'in_progress' : todoArray}, function() {
-		console.log(todoArray);
-	});
-
-
-	todoArray = [];
-	for(var currDiv = 0; currDiv < document.getElementById('completed').children.length; currDiv += 1){
-		todoArray.push(document.getElementById('completed').children[currDiv].innerHTML);
+	var arr3 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1){
+		arr3.push(document.getElementById("completed").children[currDiv].innerHTML);
 	}
 
-	chrome.storage.sync.set({'completed' : todoArray}, function() {
-		console.log(todoArray);
+	chrome.storage.sync.set({"todo" : arr1});
+	chrome.storage.sync.set({"in_progress" : arr2});
+	chrome.storage.sync.set({"completed" : arr3});
+}
+
+function checkStorage() {
+	chrome.storage.sync.get("todo", function(data) {
+		console.log(data);
 	});
-
-
-
-	chrome.storage.sync.set({'id' : myId}, function() {
+	chrome.storage.sync.get("in_progress", function(data) {
+		console.log(data);
 	});
+	chrome.storage.sync.get("completed", function(data) {
+		console.log(data);
+	});
+}
+
+function clearData(){
+	console.log("Clearning data in storage");
+	var arr = [];
+	chrome.storage.sync.set({'todo' : arr});
+	chrome.storage.sync.set({'in_progress' : arr});
+	chrome.storage.sync.set({'completed' : arr});
 }
