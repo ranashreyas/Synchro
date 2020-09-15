@@ -10,7 +10,7 @@
   <script src="synchro2.js"></script>
 
 </head>
-<body class="ui-droppable">
+<body>
 
   <div id="deleteTask" class="delete-task ui-droppable">
     <img id="trash-icon" src="images/trash.png" alt="trash">
@@ -18,38 +18,22 @@
 
   <input type="text" id="task" name="task" class="task-name" value=""><br>
   <div id="add-task" class="add-task">Add Task</div>
+  <div id="checkStorage" class="add-task">check storage</div>
 
   <div class="parent">
-    <div>
-      <ul id="todo" class="sortable">
-        <li>Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-        <li>Item 4</li>
-        <li>Item 5</li>
-      </ul>
-    </div>
+		
+		<div id="todo" class="dropzone">
+			To Do
+		</div>
 
-    <div>
-      <ul id="in_progress" class="sortable">
-        <li>Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-        <li>Item 4</li>
-        <li>Item 5</li>
-      </ul>
-    </div>
+		<div id="in_progress" class="dropzone">
+			In Progress
+		</div>
 
-    <div>
-      <ul id="complete" class="sortable">
-        <li>Item 1</li>
-        <li>Item 2</li>
-        <li>Item 3</li>
-        <li>Item 4</li>
-        <li>Item 5</li>
-      </ul>
-    </div>
-  </div>
+		<div id="completed" class="dropzone">
+			Completed!
+		</div>
+	</div>
 
 </body>
 </html>
