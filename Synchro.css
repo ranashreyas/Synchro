@@ -29,26 +29,6 @@
 	flex-grow: 1; */
 }
 
-.dropzone div {
-	background-color: #ddf4ff;
-	border: 2px solid #B6E6FC;
-	border-radius: 20px;
-	font-weight: normal;
-	padding: 10px;
-	cursor: move;
-	/* width: 120px; */
-	font-size: 1.2em;
-
-	margin-bottom: 10px;
-	margin-top: 10px;
-	padding: 10px;
-}
-
-.trash-hover {
-    width:45px;
-    height:45px;
-}
-
 .dropzone {
 	background-color: #ffffff;
 	/* flex-basis: 100%;
@@ -73,10 +53,14 @@
 	border: 2px solid #B6E6FC;
 	border-radius: 20px;
 	font-weight: normal;
+	padding: 10px;
+	cursor: move;
+	/* width: 120px; */
+	font-size: 1.2em;
+
 	margin-bottom: 10px;
 	margin-top: 10px;
 	padding: 10px;
-	cursor: move;
 }
 
 .example-origin {
@@ -86,7 +70,7 @@
 	padding: 10px;
 }
 
-.task-name {
+.task-input {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -131,14 +115,31 @@
 	font-weight: normal;
 	/* margin-bottom: 10px;
 	margin-top: 5px; */
-	padding: 10px;
-/*	width: 30px;
+	padding: 20px;
+	width: 30px;
 	height: 30px; 
-*/	/* cursor: pointer; */
+	/* cursor: pointer; */
 
 	position: fixed;
 	right: 20px;
 	top: 20px;
+
+	overflow: hidden;
+}
+
+/* [2] Transition property for smooth transformation of images */
+.delete-task img {
+  transition: transform .5s ease;
+}
+
+/* [3] Finally, transforming the image when container gets hovered */
+.delete-task:hover img {
+  transform: scale(1.5);
+}
+
+.trash-hover {
+  transition: transform .5s ease;
+  transform: scale(1.5);
 }
 
 .example-dropzone-2 {

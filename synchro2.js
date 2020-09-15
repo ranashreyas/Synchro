@@ -1,6 +1,11 @@
 var myId = 0;
 window.onload = function() {
+	// Retrieve data
+	refreshData();
 
+	// Register various listeners.
+
+	// List change listener.
 	$('.dropzone').sortable({
 		connectWith: '.dropzone',
 		stop: function(e,ui){
@@ -8,61 +13,44 @@ window.onload = function() {
     	}
 	});
 
+	// $('.task').droppable()
+	// 	.click(function() {
+	// 	}).dblclick(function() {
+	// 		alert("double click");
+	// 	});
+
+	// Task remove listener
 	$("#deleteTask").droppable({
 		hoverClass: "trash-hover",
 		drop: function ( event, ui ) {			
 			ui.draggable.remove();
 		}
 	});
-
-	// document.getElementById("deleteTask").addEventListener("drop", function(event){
-	// 	event.preventDefault();
-	// 	const id = event
-	// 		// .originalEvent
-	// 		.dataTransfer
-	// 		.getData("text");
-	// 	const taskElement = document.getElementById(id);
-	// 	const dropzone = event.target;
-	// 	dropzone.appendChild(taskElement);
-	// 	document.getElementById(id).remove();
-	// 	event
-	// 		.dataTransfer
-	// 		.clearData();
-	// 	saveData();
-	// 	document.getElementById("trash-icon").style.width = "30px";
-	// 	document.getElementById("trash-icon").style.height = "30px";
-	// });
 	
-	document.getElementById("add-task").addEventListener("click", function(){
-		myId += 1;
-
-		if(document.getElementById("task").value.toString().length > 0){
-			var val = document.getElementById("task").value;
-			document.getElementById("task").value = "";
-
-			createBlock("todo", val);
-			saveData();
-		}
+	// Add new task listners
+	document.getElementById("add-task").addEventListener("click", function() {
+		addNewTask();
 	});
 
-	// document.onkeypress = function(evt) {
-	// 	evt = evt || window.event;
-	// 	var charCode = evt.keyCode || evt.which;
-	// 	// var charStr = String.fromCharCode(charCode);
+	document.getElementById("task-input").addEventListener("keydown", function(event) {
+		if (event.key === "Enter") {
+        	event.preventDefault();
+        	// Do more work
 
-	// 	myId += 1;
-	// 	if(charCode == 13 && document.getElementById("task").value.toString().length > 0){
-	// 		var val = document.getElementById("task").value;
-	// 		document.getElementById("task").value = "";
+        	addNewTask();
+    	}
+	});
 
-	// 		createBlock("todo", val);
+	document.getElementById("checkStorage").addEventListener("click", function(){
+		checkStorage();
+	});
+	
+	document.getElementById("clearData").addEventListener("click", function() {
+		clearData();
+	});
+}
 
-	// 		setAllIdData();
-	// 	}
-	// };
-
-
-	//retrieve data
+function refreshData() {
 	chrome.storage.sync.get("todo", function(data) {
 		var i;
 		for(i = 0; i < data.todo.length; i+=1){
@@ -81,38 +69,34 @@ window.onload = function() {
 			createBlock("completed", data.completed[i]);
 		}
 	});
+
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;
-	});
+		if (myId == null || myId == 'undefined' || myId == NaN) {
+			console.log("My id is " + myId + " resetting it to 0");
+			myId = 0;
+		}
+	});	
+}
 
-	document.getElementById("checkStorage").addEventListener("click", function(){
-		checkStorage();
-	});
-	
-	document.getElementById("clearData").addEventListener("click", function() {
-		clearData();
-	});
+function addNewTask() {
+	if(document.getElementById("task-input").value.toString().length > 0){
+		var val = document.getElementById("task-input").value;
+		document.getElementById("task-input").value = "";
+
+		createBlock("todo", val);
+		saveData();
+	}
+
 }
 
 function createBlock(location, val) {
+	myId += 1;
+
 	const myDiv = document.createElement('div');
+	myDiv.className = "task";
 	myDiv.innerHTML = val.toString();
-	// const newContent = document.createTextNode(val.toString());
-	// myLi.appendChild(newContent);
-
 	myDiv.id = (val.toString() + "-" + myId.toString(10));
-
-	// myLi.setAttribute("class", "sortable li");
-	// div.setAttribute("draggable", true);
-
-	// myLi.addEventListener("dblclick", function(event) {
-	// 	myLi.setAttribute("contenteditable", true);
-	// });
-
-	// myLi.addEventListener("clickout", function(event) {
-	// 	myLi.setAttribute("contenteditable", false);
-	// });
-	// div.setAttribute("contenteditable", true);
 	
 	document.getElementById(location).appendChild(myDiv);
 }
@@ -136,6 +120,7 @@ function saveData(event) {
 	chrome.storage.sync.set({"todo" : arr1});
 	chrome.storage.sync.set({"in_progress" : arr2});
 	chrome.storage.sync.set({"completed" : arr3});
+	chrome.storage.sync.set({"id" : myId});
 }
 
 function checkStorage() {
@@ -146,6 +131,9 @@ function checkStorage() {
 		console.log(data);
 	});
 	chrome.storage.sync.get("completed", function(data) {
+		console.log(data);
+	});
+	chrome.storage.sync.get("id", function(data) {
 		console.log(data);
 	});
 }
