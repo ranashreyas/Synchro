@@ -63,6 +63,11 @@
 	padding: 10px;
 }
 
+.created {
+	color: rgb(126, 123, 123);
+	font-size: 75%;
+}
+
 .example-origin {
 	background-color: #fae77d;
 	flex-basis: 100%;

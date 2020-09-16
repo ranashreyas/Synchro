@@ -8,16 +8,27 @@ window.onload = function() {
 	// List change listener.
 	$('.dropzone').sortable({
 		connectWith: '.dropzone',
+   		start: function(){
+   			console.log("Drag started");
+   		},
 		stop: function(e,ui){
+   			console.log("Drag stopped");
 			saveData(e);
     	}
 	});
 
-	// $('.task').droppable()
-	// 	.click(function() {
-	// 	}).dblclick(function() {
-	// 		alert("double click");
-	// 	});
+	// $('.dropzone div').draggable({
+ //   		drag: function(){
+ //   			console.log("Drag started");
+ //   		},
+ //   		stop: function(){
+ //   			console.log("Drag stopped");
+ //   		}
+	// });
+
+	$('.task').dblclick(function() {
+			alert("double click");
+		});
 
 	// Task remove listener
 	$("#deleteTask").droppable({
@@ -80,9 +91,17 @@ function refreshData() {
 }
 
 function addNewTask() {
-	if(document.getElementById("task-input").value.toString().length > 0){
-		var val = document.getElementById("task-input").value;
+	if(document.getElementById("task-input").value.toString().length > 0) {
+		const data = document.getElementById("task-input").value;
 		document.getElementById("task-input").value = "";
+
+		var now = new Date(Date.now());
+		const created = $.datetimepicker.formatDate('DD/MM/YYYY HH:mm:ss', now);
+
+
+		var val = new Object();
+		val.data = data;
+		val.created = created;
 
 		createBlock("todo", val);
 		saveData();
@@ -93,34 +112,73 @@ function addNewTask() {
 function createBlock(location, val) {
 	myId += 1;
 
-	const myDiv = document.createElement('div');
-	myDiv.className = "task";
-	myDiv.innerHTML = val.toString();
-	myDiv.id = (val.toString() + "-" + myId.toString(10));
-	
-	document.getElementById(location).appendChild(myDiv);
+	const taskDiv = document.createElement('div');
+	taskDiv.className = "task";
+
+	document.getElementById(location).appendChild(taskDiv);
+
+	const dataDiv = document.createElement('div');
+	var data = val.data;
+	if (data == null || data == 'undefined') {
+		data = val.toString();
+	}
+	dataDiv.innerHTML = data;
+	taskDiv.id = (data + "-" + myId.toString(10));
+	taskDiv.appendChild(dataDiv);
+
+	dataDiv.setAttribute("contenteditable", "true");
+
+	// dataDiv.addEventListener("dblclick", function(event) {
+	// 	dataDiv.setAttribute("contenteditable", true);
+	// });
+
+	// dataDiv.addEventListener("clickout", function(event) {
+	// 	dataDiv.setAttribute("contenteditable", false);
+	// });
+
+	const createdDiv = document.createElement('div');
+	var created = val.created;
+	if (created == null || created == 'undefined') {
+		created = "";
+	}
+	createdDiv.innerHTML = created;
+	createdDiv.className = "created";
+	taskDiv.appendChild(createdDiv);
 }
 
 function saveData(event) {
 	var arr1 = [];
 	for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
-		arr1.push(document.getElementById("todo").children[currDiv].innerHTML);
+		arr1.push(toJSON(document.getElementById("todo").children[currDiv]));
 	}
 
 	var arr2 = [];
 	for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
-		arr2.push(document.getElementById("in_progress").children[currDiv].innerHTML);
+		arr2.push(toJSON(document.getElementById("in_progress").children[currDiv]));
 	}
 
 	var arr3 = [];
 	for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1){
-		arr3.push(document.getElementById("completed").children[currDiv].innerHTML);
+		arr3.push(toJSON(document.getElementById("completed").children[currDiv]));
 	}
 
 	chrome.storage.sync.set({"todo" : arr1});
 	chrome.storage.sync.set({"in_progress" : arr2});
 	chrome.storage.sync.set({"completed" : arr3});
 	chrome.storage.sync.set({"id" : myId});
+}
+
+function toJSON(taskDiv) {
+	const data = taskDiv.childNodes[0].innerHTML;
+	const created = taskDiv.childNodes[1].innerHTML;
+
+	var val = {
+		"data": data,
+		"created": created
+	}
+
+	// console.log(val);
+	return val;
 }
 
 function checkStorage() {
