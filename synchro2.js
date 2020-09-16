@@ -53,13 +53,13 @@ window.onload = function() {
     	}
 	});
 
-	document.getElementById("checkStorage").addEventListener("click", function(){
-		checkStorage();
-	});
+	// document.getElementById("checkStorage").addEventListener("click", function(){
+	// 	checkStorage();
+	// });
 	
-	document.getElementById("clearData").addEventListener("click", function() {
-		clearData();
-	});
+	// document.getElementById("clearData").addEventListener("click", function() {
+	// 	clearData();
+	// });
 }
 
 function refreshData() {
