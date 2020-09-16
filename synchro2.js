@@ -53,13 +53,13 @@ window.onload = function() {
     	}
 	});
 
-	// document.getElementById("checkStorage").addEventListener("click", function(){
-	// 	checkStorage();
-	// });
+	document.getElementById("checkStorage").addEventListener("click", function(){
+		checkStorage();
+	});
 	
-	// document.getElementById("clearData").addEventListener("click", function() {
-	// 	clearData();
-	// });
+	document.getElementById("clearData").addEventListener("click", function() {
+		clearData();
+	});
 }
 
 function refreshData() {
@@ -97,7 +97,7 @@ function addNewTask() {
 		document.getElementById("task-input").value = "";
 
 		var now = new Date(Date.now());
-		const created = $.datetimepicker.formatDate('DD/MM/YYYY HH:mm:ss', now);
+		const created = $.datepicker.formatDate('mm/dd/yy', now);
 
 
 		var val = new Object();
