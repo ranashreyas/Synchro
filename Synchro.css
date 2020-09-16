@@ -7,6 +7,11 @@
 	width: 700px;
 }
 
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 .sortable {
 	background-color: #ffffff;
 	padding: 10px;
