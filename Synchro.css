@@ -63,7 +63,12 @@
 	padding: 10px;
 }
 
+.data {
+	
+}
+
 .created {
+	margin-top: 10px;
 	color: rgb(126, 123, 123);
 	font-size: 75%;
 }

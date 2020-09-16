@@ -26,7 +26,8 @@ window.onload = function() {
  //   		}
 	// });
 
-	$('.task').dblclick(function() {
+	$('#dataid').droppable()
+		.dblclick(function() {
 			alert("double click");
 		});
 
@@ -52,13 +53,13 @@ window.onload = function() {
     	}
 	});
 
-	document.getElementById("checkStorage").addEventListener("click", function(){
-		checkStorage();
-	});
+	// document.getElementById("checkStorage").addEventListener("click", function(){
+	// 	checkStorage();
+	// });
 	
-	document.getElementById("clearData").addEventListener("click", function() {
-		clearData();
-	});
+	// document.getElementById("clearData").addEventListener("click", function() {
+	// 	clearData();
+	// });
 }
 
 function refreshData() {
@@ -118,6 +119,8 @@ function createBlock(location, val) {
 	document.getElementById(location).appendChild(taskDiv);
 
 	const dataDiv = document.createElement('div');
+	dataDiv.className = "data";
+	dataDiv.id = "dataid";
 	var data = val.data;
 	if (data == null || data == 'undefined') {
 		data = val.toString();
@@ -126,7 +129,7 @@ function createBlock(location, val) {
 	taskDiv.id = (data + "-" + myId.toString(10));
 	taskDiv.appendChild(dataDiv);
 
-	dataDiv.setAttribute("contenteditable", "true");
+	// dataDiv.setAttribute("contenteditable", "true");
 
 	// dataDiv.addEventListener("dblclick", function(event) {
 	// 	dataDiv.setAttribute("contenteditable", true);
@@ -135,6 +138,11 @@ function createBlock(location, val) {
 	// dataDiv.addEventListener("clickout", function(event) {
 	// 	dataDiv.setAttribute("contenteditable", false);
 	// });
+
+	// const createdTagDiv = document.createElement('div');
+	// createdTagDiv.innerHTML = "Created: ";
+	// createdTagDiv.className = "created";
+	// taskDiv.appendChild(createdTagDiv);
 
 	const createdDiv = document.createElement('div');
 	var created = val.created;
