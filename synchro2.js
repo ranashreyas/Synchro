@@ -1,5 +1,8 @@
 var myId = 0;
 window.onload = function() {
+	// Handle upgrade from older version.
+	handleUpgrade();
+
 	// Retrieve data
 	refreshData();
 
@@ -62,6 +65,41 @@ window.onload = function() {
 	// });
 }
 
+function handleUpgrade() {
+	// This is only to maintain upgrades from v1.0
+	chrome.storage.sync.get("Completed", function(data) {
+		if (data.Completed.length == 0) {
+			return;
+		}
+
+		console.log("Upgrading from version 1.0 with data " + data.Completed);
+
+		var arr = data.Completed;
+		console.log("Data in arr " + arr);
+
+		chrome.storage.sync.get("completed", function(data1) {
+			console.log("Starting arr " + arr);
+
+			var i;
+			for(i = 0; i < data1.completed.length; i+=1) {
+				arr.push(data1.completed[i]);
+			}
+
+			console.log("New arr " + arr);
+
+			if (arr.length > 0) {
+				chrome.storage.sync.remove('Completed');
+				chrome.storage.sync.set({'completed' : arr});
+				
+				console.log("Upgrade from version 1.0 complete");
+
+				val = true;
+			}
+		});
+	});
+	// end support for upgrade from v1.0
+}
+
 function refreshData() {
 	chrome.storage.sync.get("todo", function(data) {
 		var i;
@@ -81,15 +119,6 @@ function refreshData() {
 			createBlock("completed", data.completed[i]);
 		}
 	});
-
-	// This is only to maintain upgrades from v1.0
-	chrome.storage.sync.get("Completed", function(data) {
-		var i;
-		for(i = 0; i < data.Completed.length; i+=1){
-			createBlock("completed", data.Completed[i]);
-		}
-	});
-	// end support for upgrade from v1.0
 
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;

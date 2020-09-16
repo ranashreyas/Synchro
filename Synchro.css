@@ -54,7 +54,8 @@ html, body {
 }
 
 .task {
-	background-color: #ddf4ff;
+	background-color: #ddf4ff; 
+	opacity:0.85;
 	border: 2px solid #B6E6FC;
 	border-radius: 20px;
 	font-weight: normal;
