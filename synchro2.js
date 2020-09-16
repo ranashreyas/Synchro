@@ -82,6 +82,15 @@ function refreshData() {
 		}
 	});
 
+	// This is only to maintain upgrades from v1.0
+	chrome.storage.sync.get("Completed", function(data) {
+		var i;
+		for(i = 0; i < data.Completed.length; i+=1){
+			createBlock("completed", data.Completed[i]);
+		}
+	});
+	// end support for upgrade from v1.0
+
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;
 		if (myId == null || myId == 'undefined' || myId == NaN) {
