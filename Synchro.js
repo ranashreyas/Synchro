@@ -1,94 +1,106 @@
 var myId = 0;
 window.onload = function() {
-	var states = ["todo", "in_progress", "completed"];
+	// Handle upgrade from older version.
+	handleUpgrade();
 
-	var state;
-	for (state of states) {
-		document.getElementById(state).addEventListener("dragover", function(event){
-			event.preventDefault();
-		});
+	// Retrieve data
+	refreshData();
 
-		document.getElementById(state).addEventListener("drop", function(event){
-			event.preventDefault();
-			const id = event
-				.dataTransfer
-				.getData("text");
+	// Register various listeners.
 
-			const taskElement = document.getElementById(id);
-			document.getElementById(event.target.id).appendChild(taskElement);
-
-			event
-			  	.dataTransfer
-			  	.clearData();
-
-			saveData();
-
-			document.getElementById("trash-icon").style.width = "30px";
-			document.getElementById("trash-icon").style.height = "30px";
-		});
-	}
-
-	document.getElementById("deleteTask").addEventListener("dragover", function(event){
-		event.preventDefault();
+	// List change listener.
+	$('.dropzone').sortable({
+		connectWith: '.dropzone',
+   		start: function(){
+   			console.log("Drag started");
+   		},
+		stop: function(e,ui){
+   			console.log("Drag stopped");
+			saveData(e);
+    	}
 	});
 
-	document.getElementById("deleteTask").addEventListener("dragenter", function(event){
-		document.getElementById("trash-icon").style.width = "35px";
-		document.getElementById("trash-icon").style.height = "35px";
-	});
-	// document.getElementById("deleteTask").addEventListener("dragleave", function(event){
-	// 	document.getElementById("trash-icon").style.width = "30px";
-	// 	document.getElementById("trash-icon").style.height = "30px";
+	// $('.dropzone div').draggable({
+ //   		drag: function(){
+ //   			console.log("Drag started");
+ //   		},
+ //   		stop: function(){
+ //   			console.log("Drag stopped");
+ //   		}
 	// });
-	document.getElementById("deleteTask").addEventListener("drop", function(event){
-		event.preventDefault();
-		const id = event
-			// .originalEvent
-			.dataTransfer
-			.getData("text");
-		const taskElement = document.getElementById(id);
-		const dropzone = event.target;
-		dropzone.appendChild(taskElement);
-		document.getElementById(id).remove();
-		event
-			.dataTransfer
-			.clearData();
-		saveData();
-		document.getElementById("trash-icon").style.width = "30px";
-		document.getElementById("trash-icon").style.height = "30px";
+
+	$('#dataid').droppable()
+		.dblclick(function() {
+			alert("double click");
+		});
+
+	// Task remove listener
+	$("#deleteTask").droppable({
+		hoverClass: "trash-hover",
+		drop: function ( event, ui ) {			
+			ui.draggable.remove();
+		}
 	});
 	
-	document.getElementById("add-task").addEventListener("click", function(){
-		myId += 1;
-
-		// setAllIdData();
-
-		if(document.getElementById("task").value.toString().length > 0){
-			var val = document.getElementById("task").value;
-			document.getElementById("task").value = "";
-
-			createBlock("todo", val);
-
-			setAllIdData();
-		}
+	// Add new task listners
+	document.getElementById("add-task").addEventListener("click", function() {
+		addNewTask();
 	});
 
-	document.onkeypress = function(evt) {
-		evt = evt || window.event;
-		var charCode = evt.keyCode || evt.which;
-		// var charStr = String.fromCharCode(charCode);
+	document.getElementById("task-input").addEventListener("keydown", function(event) {
+		if (event.key === "Enter") {
+        	event.preventDefault();
+        	// Do more work
 
-		myId += 1;
-		if(charCode == 13 && document.getElementById("task").value.toString().length > 0){
-			var val = document.getElementById("task").value;
-			document.getElementById("task").value = "";
+        	addNewTask();
+    	}
+	});
 
-			createBlock("todo", val);
+	// document.getElementById("checkStorage").addEventListener("click", function(){
+	// 	checkStorage();
+	// });
+	
+	// document.getElementById("clearData").addEventListener("click", function() {
+	// 	clearData();
+	// });
+}
 
-			setAllIdData();
+function handleUpgrade() {
+	// This is only to maintain upgrades from v1.0
+	chrome.storage.sync.get("Completed", function(data) {
+		if (data.Completed.length == 0) {
+			return;
 		}
-	};
 
+		console.log("Upgrading from version 1.0 with data " + data.Completed);
+
+		var arr = data.Completed;
+		console.log("Data in arr " + arr);
+
+		chrome.storage.sync.get("completed", function(data1) {
+			console.log("Starting arr " + arr);
+
+			var i;
+			for(i = 0; i < data1.completed.length; i+=1) {
+				arr.push(data1.completed[i]);
+			}
+
+			console.log("New arr " + arr);
+
+			if (arr.length > 0) {
+				chrome.storage.sync.remove('Completed');
+				chrome.storage.sync.set({'completed' : arr});
+				
+				console.log("Upgrade from version 1.0 complete");
+
+				val = true;
+			}
+		});
+	});
+	// end support for upgrade from v1.0
+}
+
+function refreshData() {
 	chrome.storage.sync.get("todo", function(data) {
 		var i;
 		for(i = 0; i < data.todo.length; i+=1){
@@ -106,99 +118,134 @@ window.onload = function() {
 		for(i = 0; i < data.completed.length; i+=1){
 			createBlock("completed", data.completed[i]);
 		}
-		setAllIdData();
 	});
+
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;
-	});
+		if (myId == null || myId == 'undefined' || myId == NaN) {
+			console.log("My id is " + myId + " resetting it to 0");
+			myId = 0;
+		}
+	});	
+}
 
-	// document.getElementById("checkStorage").addEventListener("click", function(){
-	// 	chrome.storage.sync.get("todo", function(data) {
-	// 		console.log(data);
-	// 	});
-	// 	chrome.storage.sync.get("in_progress", function(data) {
-	// 		console.log(data);
-	// 	});
-	// 	chrome.storage.sync.get("completed", function(data) {
-	// 		console.log(data);
-	// 	});
-	// 	chrome.storage.sync.get("id", function(data) {
-	// 		console.log(data);
-	// 	});
-		
+function addNewTask() {
+	if(document.getElementById("task-input").value.toString().length > 0) {
+		const data = document.getElementById("task-input").value;
+		document.getElementById("task-input").value = "";
+
+		var now = new Date(Date.now());
+		const created = $.datepicker.formatDate('mm/dd/yy', now);
+
+
+		var val = new Object();
+		val.data = data;
+		val.created = created;
+
+		createBlock("todo", val);
+		saveData();
+	}
+
+}
+
+function createBlock(location, val) {
+	myId += 1;
+
+	const taskDiv = document.createElement('div');
+	taskDiv.className = "task";
+
+	document.getElementById(location).appendChild(taskDiv);
+
+	const dataDiv = document.createElement('div');
+	dataDiv.className = "data";
+	dataDiv.id = "dataid";
+	var data = val.data;
+	if (data == null || data == 'undefined') {
+		data = val.toString();
+	}
+	dataDiv.innerHTML = data;
+	taskDiv.id = (data + "-" + myId.toString(10));
+	taskDiv.appendChild(dataDiv);
+
+	// dataDiv.setAttribute("contenteditable", "true");
+
+	// dataDiv.addEventListener("dblclick", function(event) {
+	// 	dataDiv.setAttribute("contenteditable", true);
 	// });
-	
+
+	// dataDiv.addEventListener("clickout", function(event) {
+	// 	dataDiv.setAttribute("contenteditable", false);
+	// });
+
+	// const createdTagDiv = document.createElement('div');
+	// createdTagDiv.innerHTML = "Created: ";
+	// createdTagDiv.className = "created";
+	// taskDiv.appendChild(createdTagDiv);
+
+	const createdDiv = document.createElement('div');
+	var created = val.created;
+	if (created == null || created == 'undefined') {
+		created = "";
+	}
+	createdDiv.innerHTML = created;
+	createdDiv.className = "created";
+	taskDiv.appendChild(createdDiv);
 }
 
-function createBlock(location, val){
-	const div = document.createElement('div');
-	const newContent = document.createTextNode(val.toString());
-	div.appendChild(newContent);
+function saveData(event) {
+	var arr1 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
+		arr1.push(toJSON(document.getElementById("todo").children[currDiv]));
+	}
 
-	div.id = (val.toString() + "-" + myId.toString(10));
+	var arr2 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
+		arr2.push(toJSON(document.getElementById("in_progress").children[currDiv]));
+	}
 
-	div.setAttribute("class", "task");
-	div.setAttribute("draggable", true);
+	var arr3 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1){
+		arr3.push(toJSON(document.getElementById("completed").children[currDiv]));
+	}
 
-	div.addEventListener("dblclick", function(event) {
-		div.setAttribute("contenteditable", true);
-	});
-
-	div.addEventListener("clickout", function(event) {
-		div.setAttribute("contenteditable", false);
-	});
-	// div.setAttribute("contenteditable", true);
-	
-	document.getElementById(location).appendChild(div);
-
-	saveData();
+	chrome.storage.sync.set({"todo" : arr1});
+	chrome.storage.sync.set({"in_progress" : arr2});
+	chrome.storage.sync.set({"completed" : arr3});
+	chrome.storage.sync.set({"id" : myId});
 }
 
+function toJSON(taskDiv) {
+	const data = taskDiv.childNodes[0].innerHTML;
+	const created = taskDiv.childNodes[1].innerHTML;
 
-function setAllIdData(){
-	console.log("setting all the data!!!")
-	var items = document.getElementsByClassName("task");
-	var i;
-	for (i = 0; i < items.length; i+=1){
-		items[i].addEventListener("dragstart", function(event){
-			event
-				.dataTransfer
-				.setData('text/plain', event.target.id);
-		});
+	var val = {
+		"data": data,
+		"created": created
 	}
-	// saveData();
+
+	// console.log(val);
+	return val;
 }
 
-function saveData(){
-
-	var todoArray = [];
-	for(var currDiv = 0; currDiv < document.getElementById('todo').children.length; currDiv += 1){
-		todoArray.push(document.getElementById('todo').children[currDiv].innerHTML);
-	}
-
-	chrome.storage.sync.set({'todo' : todoArray}, function() {
+function checkStorage() {
+	chrome.storage.sync.get("todo", function(data) {
+		console.log(data);
 	});
-
-
-	todoArray = [];
-	for(var currDiv = 0; currDiv < document.getElementById('in_progress').children.length; currDiv += 1){
-		todoArray.push(document.getElementById('in_progress').children[currDiv].innerHTML);
-	}
-
-	chrome.storage.sync.set({'in_progress' : todoArray}, function() {
+	chrome.storage.sync.get("in_progress", function(data) {
+		console.log(data);
 	});
-
-
-	todoArray = [];
-	for(var currDiv = 0; currDiv < document.getElementById('completed').children.length; currDiv += 1){
-		todoArray.push(document.getElementById('completed').children[currDiv].innerHTML);
-	}
-
-	chrome.storage.sync.set({'completed' : todoArray}, function() {
+	chrome.storage.sync.get("completed", function(data) {
+		console.log(data);
 	});
-
-
-
-	chrome.storage.sync.set({'id' : myId}, function() {
+	chrome.storage.sync.get("id", function(data) {
+		console.log(data);
 	});
+}
+
+function clearData(){
+	console.log("Clearning data in storage");
+	var arr = [];
+	chrome.storage.sync.set({'todo' : arr});
+	chrome.storage.sync.set({'in_progress' : arr});
+	chrome.storage.sync.set({'completed' : arr});
 }

@@ -1,12 +1,12 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Synchro",
-    "version": "1.1",
+    "version": "1.2",
     "description": "Simple and easy to use task tracker",
     "icons": { "128": "icon_128.png"},
     "browser_action": {
         "default_icon": "icon.png",
-        "default_popup": "synchro2.html"
+        "default_popup": "synchro.html"
     },
     "permissions": [
         "storage"
