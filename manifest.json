@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Synchro",
+    "name": "Synchro: Task Tracker for Students",
     "version": "1.2",
-    "description": "Simple and easy to use task tracker",
+    "description": "As a highschooler, it is crucial to be able to organize my tasks. There may be many productivity softwares, but they all are too excessive to use. Synchro provides a simple and unobstrucive task tracker aimed towards high schoolers. Create a task with a customizable due date with only 2 clicks. This task can then be managed by dragging it through To Do, In Progress, and Completed. Each task automatically color-codes itself green, yellow, and red, based on how close it is to its due date. Color coding makes it easier to stay organized and helps to assess the state of your progress.",
     "icons": { "128": "icon_128.png"},
     "browser_action": {
         "default_icon": "icon.png",

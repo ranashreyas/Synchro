@@ -67,16 +67,29 @@ html, body {
 	margin-bottom: 10px;
 	margin-top: 10px;
 	padding: 10px;
+	/* animation: myanimation 10s infinite;
+	animation-delay: -0s; */
 }
 
-.data {
-	
+@keyframes myanimation {
+	0% {background-color: #52e465;}
+	60% {background-color:#52e465;}
+	61%{background-color:rgb(253, 253, 127);}
+	90%{background-color:rgb(253, 253, 127);}
+	91% {background-color: #f09792;}
+	100% {background-color: #f09792;}
 }
 
 .created {
 	margin-top: 10px;
-	color: rgb(126, 123, 123);
-	font-size: 80%;
+	color: black;
+	font-size: 100%;
+}
+
+.data {
+	margin-top: 10px;
+	color: black;
+	font-size: 150%;
 }
 
 .example-origin {
@@ -87,6 +100,23 @@ html, body {
 }
 
 .task-input {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+
+	/* background-color: #afd2ac; */
+	/* border: 5px solid #B6E6FC; */
+	border-radius: 10px;
+	font-weight: normal;
+	border-color: #afd2ac;
+	/* margin-bottom: 10px; */
+	margin-top: 10px;
+	padding: 10px;
+	width: 200px;
+	cursor: text;
+}
+
+.due-input {
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
@@ -259,3 +289,4 @@ html, body {
   	font-size: 30px;
   	text-align: center;
 }
+

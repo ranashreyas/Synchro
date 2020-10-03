@@ -6,6 +6,8 @@ window.onload = function() {
 	// Retrieve data
 	refreshData();
 
+	document.getElementById("due-input").valueAsDate = new Date(Date.now());
+
 	// Register various listeners.
 
 	// List change listener.
@@ -48,6 +50,15 @@ window.onload = function() {
 	});
 
 	document.getElementById("task-input").addEventListener("keydown", function(event) {
+		if (event.key === "Enter") {
+        	event.preventDefault();
+        	// Do more work
+
+        	addNewTask();
+    	}
+	});
+
+	document.getElementById("due-input").addEventListener("keydown", function(event) {
 		if (event.key === "Enter") {
         	event.preventDefault();
         	// Do more work
@@ -132,7 +143,9 @@ function refreshData() {
 function addNewTask() {
 	if(document.getElementById("task-input").value.toString().length > 0) {
 		const data = document.getElementById("task-input").value;
+		const due = document.getElementById("due-input").value;
 		document.getElementById("task-input").value = "";
+		// document.getElementById("due-input").value = "";
 
 		var now = new Date(Date.now());
 		const created = $.datepicker.formatDate('mm/dd/yy', now);
@@ -140,7 +153,14 @@ function addNewTask() {
 
 		var val = new Object();
 		val.data = data;
-		val.created = created;
+		val.created = created + " -- " + due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0];
+
+
+		var date1 = new Date(val.created.split(" ")[0]);
+		var date2 = new Date(val.created.split(" ")[2]);
+		console.log(date1);
+		console.log(date2);
+		console.log((date2-date1)/(1000));
 
 		createBlock("todo", val);
 		saveData();
@@ -159,37 +179,51 @@ function createBlock(location, val) {
 	const dataDiv = document.createElement('div');
 	dataDiv.className = "data";
 	dataDiv.id = "dataid";
+
+
 	var data = val.data;
-	if (data == null || data == 'undefined') {
-		data = val.toString();
-	}
+	// if (data == null || data == 'undefined') {
+	// 	data = val.toString();
+	// }
 	dataDiv.innerHTML = data;
 	taskDiv.id = (data + "-" + myId.toString(10));
 	taskDiv.appendChild(dataDiv);
 
-	// dataDiv.setAttribute("contenteditable", "true");
 
-	// dataDiv.addEventListener("dblclick", function(event) {
-	// 	dataDiv.setAttribute("contenteditable", true);
-	// });
 
-	// dataDiv.addEventListener("clickout", function(event) {
-	// 	dataDiv.setAttribute("contenteditable", false);
-	// });
 
-	// const createdTagDiv = document.createElement('div');
-	// createdTagDiv.innerHTML = "Created: ";
-	// createdTagDiv.className = "created";
-	// taskDiv.appendChild(createdTagDiv);
 
 	const createdDiv = document.createElement('div');
-	var created = val.created;
-	if (created == null || created == 'undefined') {
-		created = "";
-	}
-	createdDiv.innerHTML = created;
+	var dates = val.created;
+	
+	createdDiv.innerHTML = dates;
 	createdDiv.className = "created";
 	taskDiv.appendChild(createdDiv);
+
+	console.log(dates.split(" "));
+	if(dates.split(" ").length != 3){
+		return;
+	}
+
+	var date1 = new Date(dates.split(" ")[0]);
+	var date2 = new Date(dates.split(" ")[2]);
+	console.log(date1);
+	console.log(date2);
+	console.log((date2-date1)/(1000));
+
+	var animation = "myanimation " + ((date2-date1)/(1000) + 86400).toString() + "s 1";
+	var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
+
+	console.log(animation);
+	console.log(delay);
+
+	taskDiv.style.animation = animation;
+	taskDiv.style.animationDelay = delay;
+	
+
+	
+
+
 }
 
 function saveData(event) {
@@ -197,6 +231,7 @@ function saveData(event) {
 	for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
 		arr1.push(toJSON(document.getElementById("todo").children[currDiv]));
 	}
+	console.log(arr1);
 
 	var arr2 = [];
 	for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
