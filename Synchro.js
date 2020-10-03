@@ -201,6 +201,7 @@ function createBlock(location, val) {
 	taskDiv.appendChild(createdDiv);
 
 	console.log(dates.split(" "));
+	
 	if(dates.split(" ").length != 3){
 		return;
 	}
