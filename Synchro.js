@@ -14,11 +14,12 @@ window.onload = function() {
 	$('.dropzone').sortable({
 		connectWith: '.dropzone',
    		start: function(){
-   			console.log("Drag started");
+   			// console.log("Drag started");
    		},
 		stop: function(e,ui){
-   			console.log("Drag stopped");
+   			// console.log("Drag stopped");
 			saveData(e);
+			
     	}
 	});
 
@@ -47,6 +48,7 @@ window.onload = function() {
 	// Add new task listners
 	document.getElementById("add-task").addEventListener("click", function() {
 		addNewTask();
+
 	});
 
 	document.getElementById("task-input").addEventListener("keydown", function(event) {
@@ -83,26 +85,26 @@ function handleUpgrade() {
 			return;
 		}
 
-		console.log("Upgrading from version 1.0 with data " + data.Completed);
+		// console.log("Upgrading from version 1.0 with data " + data.Completed);
 
 		var arr = data.Completed;
-		console.log("Data in arr " + arr);
+		// console.log("Data in arr " + arr);
 
 		chrome.storage.sync.get("completed", function(data1) {
-			console.log("Starting arr " + arr);
+			// console.log("Starting arr " + arr);
 
 			var i;
 			for(i = 0; i < data1.completed.length; i+=1) {
 				arr.push(data1.completed[i]);
 			}
 
-			console.log("New arr " + arr);
+			// console.log("New arr " + arr);
 
 			if (arr.length > 0) {
 				chrome.storage.sync.remove('Completed');
 				chrome.storage.sync.set({'completed' : arr});
 				
-				console.log("Upgrade from version 1.0 complete");
+				// console.log("Upgrade from version 1.0 complete");
 
 				val = true;
 			}
@@ -158,9 +160,9 @@ function addNewTask() {
 
 		var date1 = new Date(val.created.split(" ")[0]);
 		var date2 = new Date(val.created.split(" ")[2]);
-		console.log(date1);
-		console.log(date2);
-		console.log((date2-date1)/(1000));
+		// console.log(date1);
+		// console.log(date2);
+		// console.log((date2-date1)/(1000));
 
 		createBlock("todo", val);
 		saveData();
@@ -200,7 +202,7 @@ function createBlock(location, val) {
 	createdDiv.className = "created";
 	taskDiv.appendChild(createdDiv);
 
-	console.log(dates.split(" "));
+	// console.log(dates.split(" "));
 	
 	if(dates.split(" ").length != 3){
 		return;
@@ -208,15 +210,15 @@ function createBlock(location, val) {
 
 	var date1 = new Date(dates.split(" ")[0]);
 	var date2 = new Date(dates.split(" ")[2]);
-	console.log(date1);
-	console.log(date2);
-	console.log((date2-date1)/(1000));
+	// console.log(date1);
+	// console.log(date2);
+	// console.log((date2-date1)/(1000));
 
 	var animation = "myanimation " + ((date2-date1)/(1000) + 86400).toString() + "s 1";
 	var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
 
-	console.log(animation);
-	console.log(delay);
+	// console.log(animation);
+	// console.log(delay);
 
 	taskDiv.style.animation = animation;
 	taskDiv.style.animationDelay = delay;
@@ -232,7 +234,7 @@ function saveData(event) {
 	for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
 		arr1.push(toJSON(document.getElementById("todo").children[currDiv]));
 	}
-	console.log(arr1);
+	// console.log(arr1);
 
 	var arr2 = [];
 	for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
@@ -265,21 +267,21 @@ function toJSON(taskDiv) {
 
 function checkStorage() {
 	chrome.storage.sync.get("todo", function(data) {
-		console.log(data);
+		// console.log(data);
 	});
 	chrome.storage.sync.get("in_progress", function(data) {
-		console.log(data);
+		// console.log(data);
 	});
 	chrome.storage.sync.get("completed", function(data) {
-		console.log(data);
+		// console.log(data);
 	});
 	chrome.storage.sync.get("id", function(data) {
-		console.log(data);
+		// console.log(data);
 	});
 }
 
 function clearData(){
-	console.log("Clearning data in storage");
+	// console.log("Clearning data in storage");
 	var arr = [];
 	chrome.storage.sync.set({'todo' : arr});
 	chrome.storage.sync.set({'in_progress' : arr});

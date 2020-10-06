@@ -9,36 +9,40 @@
   <script src="libs/jquery-ui.js"></script>
   <script src="libs/clickout-event.js"></script>
 
+  <script src="confetti.js-master/confetti.js"></script>
   <script src="synchro.js"></script>
+  
+
 
 </head>
-<body>
+<body style="overflow: hidden;">
 
-<div>
+<div id="confetti-canvas">
+
+  <div>
+    <div class="parent">
+      <input type="text" id="task-input" class="task-input" value="" placeholder="Task">
+      <h3 class="due-by">due by</h3>
+      <input type="date" id="due-input" class="due-input">
+      <div id="add-task" class="add-task">Add Task</div>
+    </div>
+  
+    
+  </div>
+
+  <div class="parent-boxes">
+    <div id="todo" class="dropzone">To Do</div>
+
+    <div id="in_progress" class="dropzone">In Progress</div>
+
+    <div id="completed" class="dropzone">Completed!</div>
+  </div>
+
+
   <div id="deleteTask" class="delete-task ui-droppable">
     <img src="images/trash.png" alt="trash">
   </div>
 
-  <!-- <div class="parent">
-  </div> -->
-  <input type="text" id="task-input" class="task-input" value="" placeholder="Task Name">
-  <input type="date" id="due-input" class="due-input">
-  <div id="add-task" class="add-task">Add Task</div>
-  
-  <div class="parent">
-
-    <div id="todo" class="dropzone">
-     To Do
-   </div>
-
-   <div id="in_progress" class="dropzone">
-     In Progress
-   </div>
-
-   <div id="completed" class="dropzone">
-     Completed!
-   </div>
- </div>
 </div>
 
 </body>
