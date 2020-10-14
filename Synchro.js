@@ -216,11 +216,10 @@ function addNewTask() {
 		const data = document.getElementById("task-input").value;
 		const due = document.getElementById("due-input").value;
 		document.getElementById("task-input").value = "";
-		// document.getElementById("due-input").value = "";
 
 		var now = new Date(Date.now());
 		const created = $.datepicker.formatDate('mm/dd/yy', now);
-
+		const dueNew = due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0];
 
 		var val = {
 			"id": data + "-" + (myId+1).toString(10),
