@@ -93,6 +93,11 @@ html, body {
 	color: black;
 	font-size: 90%;
 }
+.invisible {
+	margin-top: 0px;
+	color: black;
+	font-size: 10%;
+}
 
 .data {
 	margin-bottom: 5px;
