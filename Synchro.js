@@ -13,6 +13,33 @@ window.onload = function() {
 
 	// Register various listeners.
 
+	$("#deleteTask").droppable({
+		hoverClass: "trash-hover",
+		drop: function ( event, ui ) {
+			var removableId = ui.draggable.context.id;
+			var i;
+			for(i = 0; i < todoArr.length; i+=1){
+				if(todoArr[i].id == removableId){
+					todoArr.splice(i, 1);
+					break;
+				}
+			}
+			for(i = 0; i < inProgressArr.length; i+=1){
+				if(inProgressArr[i].id == removableId){
+					inProgressArr.splice(i, 1);
+					break;
+				}
+			}for(i = 0; i < completedArr.length; i+=1){
+				if(completedArr[i].id == removableId){
+					completedArr.splice(i, 1);
+					break;
+				}
+			}
+			ui.draggable.remove();
+		}
+	});
+
+
 	// List change listener.
 	$('.dropzone').sortable({
 		connectWith: '.dropzone',
@@ -20,8 +47,35 @@ window.onload = function() {
    			// console.log("Drag started");
    		},
 		stop: function(e,ui){
-			// console.log("Drag stopped");
-			
+
+			console.log(ui);
+
+			if(ui.item.context.parentElement == null){
+				console.log("hello");
+				var removableId = ui.item.context.id;
+				var i;
+				for(i = 0; i < todoArr.length; i+=1){
+					if(todoArr[i].id == removableId){
+						todoArr.splice(i, 1);
+						break;
+					}
+				}
+				for(i = 0; i < inProgressArr.length; i+=1){
+					if(inProgressArr[i].id == removableId){
+						inProgressArr.splice(i, 1);
+						break;
+					}
+				}for(i = 0; i < completedArr.length; i+=1){
+					if(completedArr[i].id == removableId){
+						completedArr.splice(i, 1);
+						break;
+					}
+				}
+				ui.item.remove();
+				saveData(e);
+				return;
+			}
+
 			droppedId = ui.item.context.parentElement.id;
 			removableId = ui.item.context.id;
 
@@ -78,31 +132,6 @@ window.onload = function() {
 		});
 
 	// Task remove listener
-	$("#deleteTask").droppable({
-		hoverClass: "trash-hover",
-		drop: function ( event, ui ) {
-			var removableId = ui.draggable.context.id;
-			var i;
-			for(i = 0; i < todoArr.length; i+=1){
-				if(todoArr[i].id == removableId){
-					todoArr.splice(i, 1);
-					break;
-				}
-			}
-			for(i = 0; i < inProgressArr.length; i+=1){
-				if(inProgressArr[i].id == removableId){
-					inProgressArr.splice(i, 1);
-					break;
-				}
-			}for(i = 0; i < completedArr.length; i+=1){
-				if(completedArr[i].id == removableId){
-					completedArr.splice(i, 1);
-					break;
-				}
-			}
-			ui.draggable.remove();
-		}
-	});
 	
 	// Add new task listners
 	document.getElementById("add-task").addEventListener("click", function() {
@@ -212,6 +241,9 @@ function refreshData() {
 }
 
 function addNewTask() {
+
+	console.log(myId);
+
 	if(document.getElementById("task-input").value.toString().length > 0) {
 		const data = document.getElementById("task-input").value;
 		const due = document.getElementById("due-input").value;
@@ -237,6 +269,7 @@ function addNewTask() {
 
 		todoArr.push(val);
 		createBlock("todo", val);
+		myId +=1;
 		saveData();
 	}
 
@@ -262,7 +295,7 @@ function createBlock(location, val) {
 	taskDiv.id = (val.id);
 	taskDiv.appendChild(dataDiv);
 
-	myId +=1;
+	
 
 
 
@@ -315,6 +348,7 @@ function saveData(event) {
 	console.log(todoArr);
 	console.log(inProgressArr);
 	console.log(completedArr);
+	console.log("saveData: " + myId.toString());
 }
 
 // function toJSON(taskDiv) {
