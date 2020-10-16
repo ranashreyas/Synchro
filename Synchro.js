@@ -95,13 +95,13 @@ window.onload = function() {
 		addNewTask();
 	});
 
-	document.getElementById("clear").addEventListener("click", function() {
-		clearData();
-	});
+	// document.getElementById("clear").addEventListener("click", function() {
+	// 	clearData();
+	// });
 
-	document.getElementById("checkStorage").addEventListener("click", function(){
-		checkStorage();
-	});
+	// document.getElementById("checkStorage").addEventListener("click", function(){
+	// 	checkStorage();
+	// });
 
 	document.getElementById("task-input").addEventListener("keydown", function(event) {
 		if (event.key === "Enter") {
