@@ -1,15 +1,31 @@
 .parent {
-	/* border: 2px solid #DFA612; */
-	/* color: rgb(161, 150, 150); */
 	display: flex;
 	font-family: sans-serif;
 	font-weight: bold;
 	width: 700px;
+	margin-top: 10px;
+	vertical-align: middle;
+
+
+/*	position: fixed;
+*/	background: white;
+	width: 100%;
+
+	/* overflow: hidden; */
+}
+
+.parent-boxes{
+	display: flex;
+	font-family: sans-serif;
+	font-weight: bold;
+
+	/* height: 300px; */
+	/* overflow-y: scroll; */
 }
 
 html, body {
     max-width: 100%;
-    overflow-x: hidden;
+	overflow: hidden;
 }
 
 .sortable {
@@ -59,37 +75,42 @@ html, body {
 	border: 2px solid #B6E6FC;
 	border-radius: 10px;
 	font-weight: normal;
-	padding: 10px;
+	/* padding: 3px; */
 	cursor: move;
 	/* width: 120px; */
-	font-size: 0.85em;
+	font-size: 0.7em;
 
 	margin-bottom: 10px;
 	margin-top: 10px;
-	padding: 10px;
+	padding: 7px;
 	/* animation: myanimation 10s infinite;
 	animation-delay: -0s; */
 }
 
 @keyframes myanimation {
-	0% {background-color: #52e465;}
-	60% {background-color:#52e465;}
-	61%{background-color:rgb(253, 253, 127);}
-	90%{background-color:rgb(253, 253, 127);}
-	91% {background-color: #f09792;}
-	100% {background-color: #f09792;}
+	0% {background-color: #52e46680;}
+	60% {background-color:#52e46680;}
+	61%{background-color:rgba(253, 253, 127, 0.514);}
+	90%{background-color:rgba(253, 253, 127, 0.514);}
+	91% {background-color: #f0979286;}
+	100% {background-color: #f0979286;}
 }
 
 .created {
-	margin-top: 10px;
+	margin-top: 5px;
 	color: black;
-	font-size: 100%;
+	font-size: 90%;
+}
+.invisible {
+	margin-top: 0px;
+	color: black;
+	font-size: 10%;
 }
 
 .data {
-	margin-top: 10px;
+	margin-bottom: 5px;
 	color: black;
-	font-size: 150%;
+	font-size: 140%;
 }
 
 .example-origin {
@@ -101,76 +122,65 @@ html, body {
 
 .task-input {
 	display: block;
-	margin-left: auto;
-	margin-right: auto;
+	margin-left: 10px;
+	margin-right: 10px;
 
-	/* background-color: #afd2ac; */
-	/* border: 5px solid #B6E6FC; */
 	border-radius: 10px;
 	font-weight: normal;
 	border-color: #afd2ac;
 	/* margin-bottom: 10px; */
 	margin-top: 10px;
 	padding: 10px;
-	width: 200px;
+	width: 150px;
+	height: 10px;
 	cursor: text;
 }
 
 .due-input {
 	display: block;
-	margin-left: auto;
-	margin-right: auto;
+	margin-left: 10px;
+	margin-right: 10px;
 
-	/* background-color: #afd2ac; */
-	/* border: 5px solid #B6E6FC; */
+
 	border-radius: 10px;
 	font-weight: normal;
 	border-color: #afd2ac;
-	/* margin-bottom: 10px; */
 	margin-top: 10px;
 	padding: 10px;
-	width: 200px;
+	width: 150px;
+	height: 10px;
 	cursor: text;
 }
 
 .add-task {
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
-
+	margin-top: 8px;
 	background-color: #afd2ac;
 	/* border: 5px solid #B6E6FC; */
 	border-radius: 10px;
 	font-weight: normal;
-	margin-bottom: 10px;
-	margin-top: 5px;
-	padding: 10px;
-	width: 200px;
+	padding: 9px 12px 17px 12px;
+	/* width: 200px; */
+	height: 10px;
 	cursor: pointer;
 	text-align: center;
 }
 
+.due-by {
+}
+
 .delete-task {
 	display: block;
-	/* margin-left: auto;
-	margin-right: auto; */
-
-	background-color: #ffffff;
-	/* border: 5px solid #B6E6FC; */
 	border-radius: 10px;
 	font-weight: normal;
-	/* margin-bottom: 10px;
-	margin-top: 5px; */
+	margin-top: 10px;
 	padding: 20px;
 	width: 30px;
 	height: 30px; 
 	/* cursor: pointer; */
 
-	position: fixed;
-	right: 20px;
-	top: 20px;
-
-	overflow: hidden;
+	position: absolute;
+	right: 0px;
+	top: 0px;
 }
 
 /* [2] Transition property for smooth transformation of images */
@@ -193,11 +203,6 @@ html, body {
 	flex-basis: 100%;
 	flex-grow: 1;
 	padding: 10px;
-}
-
-.topnav {
-  overflow: hidden;
-  background-color: #e9e9e9;
 }
 
 .topnav .search-container {
@@ -235,27 +240,6 @@ html, body {
   font-size: 17px;
 }
 */
-.top_bar {
-    box-sizing: border-box;
-    height: 44px;
-    background-color: #fff;
-    top: 0;
-    position: fixed;
-    z-index: 200;
-    display: -webkit-box;
-    display: flex;
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-pack: center;
-    justify-content: center;
-    width: 100vw;
-    border-bottom: 1px solid transparent;
-    background-color: #db4c3f;
-    -webkit-transition: height .2s ease-in;
-    transition: height .2s ease-in;
-    padding-left: 42px;
-    padding-right: 42px;
-}
 
 .grid-container {
   	display: inline-grid;
