@@ -4,7 +4,7 @@ var inProgressArr = [];
 var completedArr = [];
 window.onload = function() {
 	// Handle upgrade from older version.
-	// handleUpgrade();
+	handleUpgrade();
 
 	// Retrieve data
 	refreshData();
@@ -169,40 +169,21 @@ window.onload = function() {
 	// });
 }
 
-// function handleUpgrade() {
-// 	// This is only to maintain upgrades from v1.0
-// 	chrome.storage.sync.get("Completed", function(data) {
-// 		if (data.Completed.length == 0) {
-// 			return;
-// 		}
-
-// 		// console.log("Upgrading from version 1.0 with data " + data.Completed);
-
-// 		var arr = data.Completed;
-// 		// console.log("Data in arr " + arr);
-
-// 		chrome.storage.sync.get("completed", function(data1) {
-// 			// console.log("Starting arr " + arr);
-
-// 			var i;
-// 			for(i = 0; i < data1.completed.length; i+=1) {
-// 				arr.push(data1.completed[i]);
-// 			}
-
-// 			// console.log("New arr " + arr);
-
-// 			if (arr.length > 0) {
-// 				chrome.storage.sync.remove('Completed');
-// 				chrome.storage.sync.set({'completed' : arr});
-				
-// 				// console.log("Upgrade from version 1.0 complete");
-
-// 				val = true;
-// 			}
-// 		});
-// 	});
-// 	// end support for upgrade from v1.0
-// }
+function handleUpgrade() {
+	// This is only to maintain upgrades from v1.3
+	chrome.storage.sync.get("version", function(data) {
+		console.log(data.version);
+		const version = data.version;
+		if (version == null || version == 'undefined' || version == NaN || version != "1.4") {
+			// update handling is needed
+			console.log("Version is undefined or is older version");
+		} else {
+			// no upgrade handling is needed.
+			console.log("Version is 1.4");
+		}
+	});
+	// end support for upgrade from v1.3
+}
 
 function refreshData() {
 
@@ -344,6 +325,7 @@ function saveData(event) {
 	chrome.storage.sync.set({"in_progress" : inProgressArr});
 	chrome.storage.sync.set({"completed" : completedArr});
 	chrome.storage.sync.set({"id" : myId});
+	// chrome.storage.sync.remove({"version") : "1.4"});
 
 	console.log(todoArr);
 	console.log(inProgressArr);
@@ -377,6 +359,10 @@ function checkStorage() {
 		// console.log(data);
 	});
 	chrome.storage.sync.get("id", function(data) {
+		// console.log(data);
+	});
+
+	chrome.storage.sync.get("version", function(data) {
 		// console.log(data);
 	});
 }
