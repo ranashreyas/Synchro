@@ -152,37 +152,44 @@ function refreshData() {
 
 	chrome.storage.sync.get("todo", function(data) {
 		var i;
-		for(i = 0; i < data.todo.length; i+=1){
-			var id = data.todo[i].id;
-			if (id == null || id == 'undefined') {
+		for(i = 0; i < data.todo.length; i+=1) {
+			if (data.todo[i] == null) {
+				continue;
+			}
+			if (!('id' in data.todo[i])) {
 				data.todo[i].id = myId++;
 			}
 
-			todoArr[id] = data.todo[i];
+			todoArr[data.todo[i].id] = data.todo[i];
 			createBlock("todo", data.todo[i]);
 		}
 	});
 	chrome.storage.sync.get("in_progress", function(data) {
 		var i;
 		for(i = 0; i < data.in_progress.length; i+=1){
-			var id = data.in_progress[i].id;
-			if (id == null || id == 'undefined') {
+			if (data.in_progress[i] == null) {
+				continue;
+			}
+			if (!('id' in data.in_progress[i])) {
 				data.in_progress[i].id = myId++;
 			}
 
-			inProgressArr[id] = data.in_progress[i];
+			inProgressArr[data.in_progress[i].id] = data.in_progress[i];
 			createBlock("in_progress", data.in_progress[i]);
 		}
 	});
 	chrome.storage.sync.get("completed", function(data) {
 		var i;
 		for(i = 0; i < data.completed.length; i+=1){
-			var id = data.completed[i].id;
-			if (id == null || id == 'undefined') {
+			if (data.completed[i] == null) {
+				continue;
+			}
+			
+			if (!('id' in data.completed[i])) {
 				data.completed[i].id = myId++;
 			}
 
-			completedArr[id] = data.completed[i];
+			completedArr[data.completed[i].id] = data.completed[i];
 			createBlock("completed", data.completed[i]);
 		}
 	});
