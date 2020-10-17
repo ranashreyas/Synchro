@@ -49,6 +49,7 @@ window.onload = function() {
 
 			const droppedId = ui.item.context.parentElement.id;
 			const id = ui.item.context.id;
+
 			var item = todoArr[id];
 			delete todoArr[id];
 			if (item == null) {
@@ -61,6 +62,10 @@ window.onload = function() {
 				delete completedArr[id];
 			}
 
+			console.log(item)
+			const now = new Date(Date.now);
+			item.lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+
 			if(droppedId == "todo") {
 				todoArr[id] = item;
 			} else if(droppedId == "in_progress"){
@@ -70,7 +75,6 @@ window.onload = function() {
 			}
 
 			saveData(e);
-			
     	}
 	});
 
@@ -159,6 +163,10 @@ function refreshData() {
 			if (!('id' in data.todo[i])) {
 				data.todo[i].id = myId++;
 			}
+			if (!('lastUpdated' in data.todo[i])) {
+				const now = new Date(Date.now);
+				data.todo[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+			}
 
 			todoArr[data.todo[i].id] = data.todo[i];
 			createBlock("todo", data.todo[i]);
@@ -173,6 +181,10 @@ function refreshData() {
 			if (!('id' in data.in_progress[i])) {
 				data.in_progress[i].id = myId++;
 			}
+			if (!('lastUpdated' in data.in_progress[i])) {
+				const now = new Date(Date.now);
+				data.in_progress[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+			}
 
 			inProgressArr[data.in_progress[i].id] = data.in_progress[i];
 			createBlock("in_progress", data.in_progress[i]);
@@ -184,11 +196,20 @@ function refreshData() {
 			if (data.completed[i] == null) {
 				continue;
 			}
-			
+
 			if (!('id' in data.completed[i])) {
 				data.completed[i].id = myId++;
 			}
-
+			if (!('lastUpdated' in data.completed[i])) {
+				const now = new Date(Date.now);
+				data.completed[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+			} else {
+				var lastUpdated = new Date(data.completed[i].lastUpdated);
+				var now = new Date(Date.now());
+				const diff = (now-lastUpdated)/1000/60/60;
+				console.log('Id: ' + data.completed[i].id + ' last updated: ' + diff + ' hours back');				
+			}
+			
 			completedArr[data.completed[i].id] = data.completed[i];
 			createBlock("completed", data.completed[i]);
 		}
@@ -211,7 +232,8 @@ function addNewTask() {
 			"id": myId.toString(10),
 			"data": data,
 			"created": created,
-			"due": due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0]
+			"due": due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0],
+			"lastUpdate": created
 		}
 
 		todoArr[val.id] = val;
@@ -248,10 +270,10 @@ function createBlock(location, val) {
 	var date2 = new Date(val.due);
 
 	var animation = "myanimation " + ((date2-date1)/(1000) + 86400).toString() + "s 1";
-	var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
+	// var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
 
 	taskDiv.style.animation = animation;
-	taskDiv.style.animationDelay = delay;
+	// taskDiv.style.animationDelay = delay;
 }
 
 function saveData(event) {
