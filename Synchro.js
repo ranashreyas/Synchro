@@ -206,7 +206,6 @@ function addNewTask() {
 
 		var now = new Date(Date.now());
 		const created = $.datepicker.formatDate('mm/dd/yy', now);
-		const dueNew = due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0];
 
 		var val = {
 			"id": myId.toString(10),
@@ -214,13 +213,6 @@ function addNewTask() {
 			"created": created,
 			"due": due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0]
 		}
-
-		// var date1 = new Date(val.created);
-		// var date2 = new Date(val.due);
-		// console.log(date1);
-		// console.log(date2);
-		// console.log((date2-date1)/(1000));
-
 
 		todoArr[val.id] = val;
 		createBlock("todo", val);
@@ -231,7 +223,6 @@ function addNewTask() {
 }
 
 function createBlock(location, val) {
-
 	const taskDiv = document.createElement('div');
 	taskDiv.className = "task";
 
@@ -242,37 +233,22 @@ function createBlock(location, val) {
 	dataDiv.id = "dataid";
 
 
-	var data = val.data;
-	// if (data == null || data == 'undefined') {
-	// 	data = val.toString();
-	// }
-	dataDiv.innerHTML = data;
+	dataDiv.innerHTML = val.data;
 	taskDiv.id = (val.id);
 	taskDiv.appendChild(dataDiv);
 
-	
 
+	const dueDiv = document.createElement('div');
+	dueDiv.className = "due";
+	taskDiv.appendChild(dueDiv);	
+	dueDiv.innerHTML = "Due: " + val.due;
 
-
-	const createdDiv = document.createElement('div');
-	var end = val.due;
-	
-	createdDiv.innerHTML = end;
-	createdDiv.className = "created";
-
-	taskDiv.appendChild(createdDiv);
-
+	// Calculate the color of the block.
 	var date1 = new Date(val.created);
 	var date2 = new Date(val.due);
-	// console.log(date1);
-	// console.log(date2);
-	// console.log((date2-date1)/(1000));
 
 	var animation = "myanimation " + ((date2-date1)/(1000) + 86400).toString() + "s 1";
 	var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
-
-	// console.log(animation);
-	// console.log(delay);
 
 	taskDiv.style.animation = animation;
 	taskDiv.style.animationDelay = delay;
