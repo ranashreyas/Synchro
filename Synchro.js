@@ -1,3 +1,4 @@
+var uuid = 0;
 var myId = 0;
 var todoArr = {};
 var inProgressArr = {};
@@ -148,10 +149,17 @@ function refreshData() {
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;
 		if (myId == null || myId == 'undefined' || myId == NaN) {
-			console.log("My id is " + myId + " resetting it to 0");
 			myId = 1;
 		}
-		console.log(myId);
+	});
+
+	chrome.storage.sync.get("uuid", function(data) {
+		uuid = data.uuid;
+		if (uuid == null || uuid == 'undefined' || uuid == NaN) {
+			uuid = createUUID();
+			console.log("UUID is " + data.uuid + " setting it to " + uuid);
+		}
+		console.log("UUID is: " + uuid);
 	});
 
 	chrome.storage.sync.get("todo", function(data) {
@@ -301,11 +309,12 @@ function saveData(event) {
 	chrome.storage.sync.set({"completed" : arr3});
 	chrome.storage.sync.set({"id" : myId});
 	chrome.storage.sync.set({"version" : "1.4"});
+	chrome.storage.sync.set({"uuid" : uuid});
 
 	console.log(arr1);
 	console.log(arr2);
 	console.log(arr3);
-	console.log("saveData: " + myId.toString());
+	console.log("saveData: UUID" + uuid.toString());
 }
 
 function checkStorage() {
@@ -336,4 +345,14 @@ function clearData(){
 	chrome.storage.sync.set({'todo' : emptyArr});
 	chrome.storage.sync.set({'in_progress' : emptyArr});
 	chrome.storage.sync.set({'completed' : emptyArr});
+}
+
+function createUUID(){
+    var dt = new Date().getTime();
+    var myuuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (dt + Math.random()*16)%16 | 0;
+        dt = Math.floor(dt/16);
+        return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+    });
+    return myuuid;
 }
