@@ -96,11 +96,12 @@ html, body {
 	100% {background-color: #f0979286;}
 }
 
-.created {
+.due {
 	margin-top: 5px;
-	color: black;
+	color: #878f99;
 	font-size: 90%;
 }
+
 .invisible {
 	margin-top: 0px;
 	color: black;

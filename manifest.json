@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
     "name": "Synchro: Task Tracker for Students",
-    "version": "1.4",
-    "description": "Although most productivity apps are excessive to use, Synchro provides a simple and unobtrusive task tracker to stay focused.",
+    "version": "1.5",
+    "description": "Synchro is a simple and intuitive task tracker built specifically for students to stay focused and organized.",
     "icons": { "128": "icon_128.png"},
     "browser_action": {
         "default_icon": "icon.png",

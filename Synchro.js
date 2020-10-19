@@ -1,3 +1,4 @@
+var uuid = 0;
 var myId = 0;
 var todoArr = {};
 var inProgressArr = {};
@@ -49,6 +50,7 @@ window.onload = function() {
 
 			const droppedId = ui.item.context.parentElement.id;
 			const id = ui.item.context.id;
+
 			var item = todoArr[id];
 			delete todoArr[id];
 			if (item == null) {
@@ -61,6 +63,10 @@ window.onload = function() {
 				delete completedArr[id];
 			}
 
+			console.log(item)
+			const now = new Date(Date.now);
+			item.lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+
 			if(droppedId == "todo") {
 				todoArr[id] = item;
 			} else if(droppedId == "in_progress"){
@@ -70,7 +76,6 @@ window.onload = function() {
 			}
 
 			saveData(e);
-			
     	}
 	});
 
@@ -144,10 +149,17 @@ function refreshData() {
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;
 		if (myId == null || myId == 'undefined' || myId == NaN) {
-			console.log("My id is " + myId + " resetting it to 0");
 			myId = 1;
 		}
-		console.log(myId);
+	});
+
+	chrome.storage.sync.get("uuid", function(data) {
+		uuid = data.uuid;
+		if (uuid == null || uuid == 'undefined' || uuid == NaN) {
+			uuid = createUUID();
+			console.log("UUID is " + data.uuid + " setting it to " + uuid);
+		}
+		console.log("UUID is: " + uuid);
 	});
 
 	chrome.storage.sync.get("todo", function(data) {
@@ -158,6 +170,10 @@ function refreshData() {
 			}
 			if (!('id' in data.todo[i])) {
 				data.todo[i].id = myId++;
+			}
+			if (!('lastUpdated' in data.todo[i])) {
+				const now = new Date(Date.now);
+				data.todo[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
 			}
 
 			todoArr[data.todo[i].id] = data.todo[i];
@@ -173,6 +189,10 @@ function refreshData() {
 			if (!('id' in data.in_progress[i])) {
 				data.in_progress[i].id = myId++;
 			}
+			if (!('lastUpdated' in data.in_progress[i])) {
+				const now = new Date(Date.now);
+				data.in_progress[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+			}
 
 			inProgressArr[data.in_progress[i].id] = data.in_progress[i];
 			createBlock("in_progress", data.in_progress[i]);
@@ -184,11 +204,20 @@ function refreshData() {
 			if (data.completed[i] == null) {
 				continue;
 			}
-			
+
 			if (!('id' in data.completed[i])) {
 				data.completed[i].id = myId++;
 			}
-
+			if (!('lastUpdated' in data.completed[i])) {
+				const now = new Date(Date.now);
+				data.completed[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+			} else {
+				var lastUpdated = new Date(data.completed[i].lastUpdated);
+				var now = new Date(Date.now());
+				const diff = (now-lastUpdated)/1000/60/60;
+				console.log('Id: ' + data.completed[i].id + ' last updated: ' + diff + ' hours back');				
+			}
+			
 			completedArr[data.completed[i].id] = data.completed[i];
 			createBlock("completed", data.completed[i]);
 		}
@@ -206,24 +235,17 @@ function addNewTask() {
 
 		var now = new Date(Date.now());
 		const created = $.datepicker.formatDate('mm/dd/yy', now);
-		const dueNew = due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0];
 
 		var val = {
 			"id": myId.toString(10),
 			"data": data,
 			"created": created,
-			"due": due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0]
+			"due": due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0],
+			"lastUpdate": created
 		}
 
-		// var date1 = new Date(val.created);
-		// var date2 = new Date(val.due);
-		// console.log(date1);
-		// console.log(date2);
-		// console.log((date2-date1)/(1000));
-
-
 		todoArr[val.id] = val;
-		createBlock("todo", val);
+		createBlock("todo", val, true);
 		myId += 1;
 		saveData();
 	}
@@ -231,51 +253,45 @@ function addNewTask() {
 }
 
 function createBlock(location, val) {
+	createBlock(location, val, false);
+}
 
+function createBlock(location, val, top) {
 	const taskDiv = document.createElement('div');
 	taskDiv.className = "task";
 
-	document.getElementById(location).appendChild(taskDiv);
+	const locDiv = document.getElementById(location);
+	if (top) {
+		locDiv.insertBefore(taskDiv, locDiv.firstChild.nextSibling);
+	} else {
+		locDiv.appendChild(taskDiv);
+	}
 
 	const dataDiv = document.createElement('div');
 	dataDiv.className = "data";
 	dataDiv.id = "dataid";
 
 
-	var data = val.data;
-	// if (data == null || data == 'undefined') {
-	// 	data = val.toString();
-	// }
-	dataDiv.innerHTML = data;
+	dataDiv.innerHTML = val.data;
 	taskDiv.id = (val.id);
+
 	taskDiv.appendChild(dataDiv);
 
-	
 
+	const dueDiv = document.createElement('div');
+	dueDiv.className = "due";
+	taskDiv.appendChild(dueDiv);	
+	dueDiv.innerHTML = "Due: " + val.due;
 
-
-	const createdDiv = document.createElement('div');
-	var end = val.due;
-	
-	createdDiv.innerHTML = end;
-	createdDiv.className = "created";
-
-	taskDiv.appendChild(createdDiv);
-
+	// Calculate the color of the block.
 	var date1 = new Date(val.created);
 	var date2 = new Date(val.due);
-	// console.log(date1);
-	// console.log(date2);
-	// console.log((date2-date1)/(1000));
 
 	var animation = "myanimation " + ((date2-date1)/(1000) + 86400).toString() + "s 1";
-	var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
-
-	// console.log(animation);
-	// console.log(delay);
+	// var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
 
 	taskDiv.style.animation = animation;
-	taskDiv.style.animationDelay = delay;
+	// taskDiv.style.animationDelay = delay;
 }
 
 function saveData(event) {
@@ -303,11 +319,12 @@ function saveData(event) {
 	chrome.storage.sync.set({"completed" : arr3});
 	chrome.storage.sync.set({"id" : myId});
 	chrome.storage.sync.set({"version" : "1.4"});
+	chrome.storage.sync.set({"uuid" : uuid});
 
 	console.log(arr1);
 	console.log(arr2);
 	console.log(arr3);
-	console.log("saveData: " + myId.toString());
+	console.log("saveData: UUID: " + uuid.toString());
 }
 
 function checkStorage() {
@@ -338,4 +355,14 @@ function clearData(){
 	chrome.storage.sync.set({'todo' : emptyArr});
 	chrome.storage.sync.set({'in_progress' : emptyArr});
 	chrome.storage.sync.set({'completed' : emptyArr});
+}
+
+function createUUID(){
+    var dt = new Date().getTime();
+    var myuuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (dt + Math.random()*16)%16 | 0;
+        dt = Math.floor(dt/16);
+        return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+    });
+    return myuuid;
 }
