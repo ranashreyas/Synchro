@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "Synchro v1.5: Task Tracker for Students",
+    "name": "Synchro: Task Tracker for Students",
     "version": "1.5",
     "description": "Synchro is a simple and intuitive task tracker built specifically for students to stay focused and organized.",
     "icons": { "128": "icon_128.png"},
