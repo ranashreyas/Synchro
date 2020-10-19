@@ -245,7 +245,7 @@ function addNewTask() {
 		}
 
 		todoArr[val.id] = val;
-		createBlock("todo", val);
+		createBlock("todo", val, true);
 		myId += 1;
 		saveData();
 	}
@@ -253,10 +253,19 @@ function addNewTask() {
 }
 
 function createBlock(location, val) {
+	createBlock(location, val, false);
+}
+
+function createBlock(location, val, top) {
 	const taskDiv = document.createElement('div');
 	taskDiv.className = "task";
 
-	document.getElementById(location).appendChild(taskDiv);
+	const locDiv = document.getElementById(location);
+	if (top) {
+		locDiv.insertBefore(taskDiv, locDiv.firstChild.nextSibling);
+	} else {
+		locDiv.appendChild(taskDiv);
+	}
 
 	const dataDiv = document.createElement('div');
 	dataDiv.className = "data";
@@ -265,6 +274,7 @@ function createBlock(location, val) {
 
 	dataDiv.innerHTML = val.data;
 	taskDiv.id = (val.id);
+
 	taskDiv.appendChild(dataDiv);
 
 
@@ -314,7 +324,7 @@ function saveData(event) {
 	console.log(arr1);
 	console.log(arr2);
 	console.log(arr3);
-	console.log("saveData: UUID" + uuid.toString());
+	console.log("saveData: UUID: " + uuid.toString());
 }
 
 function checkStorage() {
