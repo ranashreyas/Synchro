@@ -36,10 +36,10 @@ window.onload = function() {
    		},
 		stop: function(e,ui){
 
-			console.log(ui);
+			// console.log(ui);
 
 			if(ui.item.context.parentElement == null) {
-				console.log("hello");
+				// console.log("hello");
 				var removableId = ui.item.context.id;
 				delete todoArr[removableId];
 				delete inProgressArr[removableId];
@@ -64,7 +64,7 @@ window.onload = function() {
 				delete completedArr[id];
 			}
 
-			console.log(item)
+			// console.log(item);
 			const now = new Date(Date.now);
 			item.lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
 
@@ -132,14 +132,14 @@ function handleUpgrade() {
 	var dfd = new jQuery.Deferred();
 
 	chrome.storage.sync.get("version", function(data) {
-		console.log(data.version);
+		// console.log(data.version);
 		const version = data.version;
 		if (version == null || version == 'undefined' || version == NaN || version != "1.4") {
 			// update handling is needed
 			console.log("Upgrading from older version");
 		} else {
 			// no upgrade handling is needed.
-			console.log("Version is 1.4");
+			// console.log("Version is 1.4");
 			dfd.notify();
 		}
 	});
@@ -160,7 +160,7 @@ function refreshData() {
 			uuid = createUUID();
 			console.log("UUID is " + data.uuid + " setting it to " + uuid);
 		}
-		console.log("UUID is: " + uuid);
+		// console.log("UUID is: " + uuid);
 	});
 
 	chrome.storage.sync.get("todo", function(data) {
@@ -179,6 +179,7 @@ function refreshData() {
 
 			todoArr[data.todo[i].id] = data.todo[i];
 			createBlock("todo", data.todo[i]);
+			console.log(data.todo[i]);
 		}
 	});
 	chrome.storage.sync.get("in_progress", function(data) {
@@ -288,11 +289,13 @@ function createBlock(location, val, top) {
 	var date1 = new Date(val.created);
 	var date2 = new Date(val.due);
 
+	// console.log((date2-date1)/(1000));
+
 	var animation = "myanimation " + ((date2-date1)/(1000) + 86400).toString() + "s 1";
-	// var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
+	var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
 
 	taskDiv.style.animation = animation;
-	// taskDiv.style.animationDelay = delay;
+	taskDiv.style.animationDelay = delay;
 }
 
 function saveData(event) {
@@ -301,7 +304,7 @@ function saveData(event) {
 		const id = document.getElementById("todo").children[currDiv].id;
 		arr1.push(todoArr[id]);
 	}
-	console.log(arr1);
+	// console.log(arr1);
 
 	var arr2 = [];
 	for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
@@ -322,10 +325,10 @@ function saveData(event) {
 	chrome.storage.sync.set({"version" : "1.4"});
 	chrome.storage.sync.set({"uuid" : uuid});
 
-	console.log(arr1);
-	console.log(arr2);
-	console.log(arr3);
-	console.log("saveData: UUID: " + uuid.toString());
+	// console.log(arr1);
+	// console.log(arr2);
+	// console.log(arr3);
+	// console.log("saveData: UUID: " + uuid.toString());
 }
 
 function checkStorage() {
