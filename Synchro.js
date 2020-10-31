@@ -48,10 +48,10 @@ window.onload = function() {
    		},
 		stop: function(e,ui){
 
-			console.log(ui);
+			// console.log(ui);
 
 			if(ui.item.context.parentElement == null){
-				console.log("hello");
+				// console.log("hello");
 				var removableId = ui.item.context.id;
 				var i;
 				for(i = 0; i < todoArr.length; i+=1){
@@ -209,10 +209,10 @@ function refreshData() {
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;
 		if (myId == null || myId == 'undefined' || myId == NaN) {
-			console.log("My id is " + myId + " resetting it to 0");
+			// console.log("My id is " + myId + " resetting it to 0");
 			myId = 0;
 		}
-		console.log(myId);
+		// console.log(myId);
 	});
 
 	chrome.storage.sync.get("todo", function(data) {
@@ -242,7 +242,7 @@ function refreshData() {
 
 function addNewTask() {
 
-	console.log(myId);
+	// console.log(myId);
 
 	if(document.getElementById("task-input").value.toString().length > 0) {
 		const data = document.getElementById("task-input").value;
@@ -345,10 +345,10 @@ function saveData(event) {
 	chrome.storage.sync.set({"completed" : completedArr});
 	chrome.storage.sync.set({"id" : myId});
 
-	console.log(todoArr);
-	console.log(inProgressArr);
-	console.log(completedArr);
-	console.log("saveData: " + myId.toString());
+	// console.log(todoArr);
+	// console.log(inProgressArr);
+	// console.log(completedArr);
+	// console.log("saveData: " + myId.toString());
 }
 
 // function toJSON(taskDiv) {
