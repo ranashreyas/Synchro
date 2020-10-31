@@ -1,10 +1,12 @@
+var uuid = 0;
 var myId = 0;
-var todoArr = [];
-var inProgressArr = [];
-var completedArr = [];
+var todoArr = {};
+var inProgressArr = {};
+var completedArr = {};
+
 window.onload = function() {
 	// Handle upgrade from older version.
-	// handleUpgrade();
+	handleUpgrade();
 
 	// Retrieve data
 	refreshData();
@@ -13,34 +15,20 @@ window.onload = function() {
 
 	// Register various listeners.
 
+	// The task is being deleted.
 	$("#deleteTask").droppable({
 		hoverClass: "trash-hover",
 		drop: function ( event, ui ) {
 			var removableId = ui.draggable.context.id;
-			var i;
-			for(i = 0; i < todoArr.length; i+=1){
-				if(todoArr[i].id == removableId){
-					todoArr.splice(i, 1);
-					break;
-				}
-			}
-			for(i = 0; i < inProgressArr.length; i+=1){
-				if(inProgressArr[i].id == removableId){
-					inProgressArr.splice(i, 1);
-					break;
-				}
-			}for(i = 0; i < completedArr.length; i+=1){
-				if(completedArr[i].id == removableId){
-					completedArr.splice(i, 1);
-					break;
-				}
-			}
+			delete todoArr[removableId];
+			delete inProgressArr[removableId];
+			delete completedArr[removableId];
 			ui.draggable.remove();
 		}
 	});
 
 
-	// List change listener.
+	// The task is being moved from one column to another.
 	$('.dropzone').sortable({
 		connectWith: '.dropzone',
    		start: function(){
@@ -48,72 +36,47 @@ window.onload = function() {
    		},
 		stop: function(e,ui){
 
-			// console.log(ui);
+			console.log(ui);
 
-			if(ui.item.context.parentElement == null){
-				// console.log("hello");
+			if(ui.item.context.parentElement == null) {
+				console.log("hello");
 				var removableId = ui.item.context.id;
-				var i;
-				for(i = 0; i < todoArr.length; i+=1){
-					if(todoArr[i].id == removableId){
-						todoArr.splice(i, 1);
-						break;
-					}
-				}
-				for(i = 0; i < inProgressArr.length; i+=1){
-					if(inProgressArr[i].id == removableId){
-						inProgressArr.splice(i, 1);
-						break;
-					}
-				}for(i = 0; i < completedArr.length; i+=1){
-					if(completedArr[i].id == removableId){
-						completedArr.splice(i, 1);
-						break;
-					}
-				}
+				delete todoArr[removableId];
+				delete inProgressArr[removableId];
+				delete completedArr[removableId];
 				ui.item.remove();
 				saveData(e);
 				return;
 			}
 
-			droppedId = ui.item.context.parentElement.id;
-			removableId = ui.item.context.id;
+			const droppedId = ui.item.context.parentElement.id;
+			const id = ui.item.context.id;
 
-			var item;
-			for(i = 0; i < todoArr.length; i+=1){
-				if(todoArr[i].id == removableId){
-					item = todoArr[i];
-					todoArr.splice(i, 1);
-					break;
-				}
-			}
-			for(i = 0; i < inProgressArr.length; i+=1){
-				if(inProgressArr[i].id == removableId){
-					item = inProgressArr[i];
-					inProgressArr.splice(i, 1);
-					break;
-				}
-			}
-			for(i = 0; i < completedArr.length; i+=1){
-				if(completedArr[i].id == removableId){
-					item = completedArr[i];
-					completedArr.splice(i, 1);
-					break;
-				}
+			var item = todoArr[id];
+			delete todoArr[id];
+			if (item == null) {
+				item = inProgressArr[id];
+				delete inProgressArr[id];
 			}
 
-			if(droppedId == "todo"){
-				todoArr.push(item);
+			if (item == null) {
+				item = completedArr[id];
+				delete completedArr[id];
 			}
-			if(droppedId == "in_progress"){
-				inProgressArr.push(item);
-			}
-			if(droppedId == "completed"){
-				completedArr.push(item);
+
+			console.log(item)
+			const now = new Date(Date.now);
+			item.lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+
+			if(droppedId == "todo") {
+				todoArr[id] = item;
+			} else if(droppedId == "in_progress"){
+				inProgressArr[id] = item;
+			} else if(droppedId == "completed"){
+				completedArr[id] = item;
 			}
 
 			saveData(e);
-			
     	}
 	});
 
@@ -138,9 +101,13 @@ window.onload = function() {
 		addNewTask();
 	});
 
-	document.getElementById("clear").addEventListener("click", function() {
-		clearData();
-	});
+	// document.getElementById("clear").addEventListener("click", function() {
+	// 	clearData();
+	// });
+
+	// document.getElementById("checkStorage").addEventListener("click", function(){
+	// 	checkStorage();
+	// });
 
 	document.getElementById("task-input").addEventListener("keydown", function(event) {
 		if (event.key === "Enter") {
@@ -159,85 +126,103 @@ window.onload = function() {
         	addNewTask();
     	}
 	});
-
-	// document.getElementById("checkStorage").addEventListener("click", function(){
-	// 	checkStorage();
-	// });
-	
-	// document.getElementById("clearData").addEventListener("click", function() {
-	// 	clearData();
-	// });
 }
 
-// function handleUpgrade() {
-// 	// This is only to maintain upgrades from v1.0
-// 	chrome.storage.sync.get("Completed", function(data) {
-// 		if (data.Completed.length == 0) {
-// 			return;
-// 		}
+function handleUpgrade() {
+	var dfd = new jQuery.Deferred();
 
-// 		// console.log("Upgrading from version 1.0 with data " + data.Completed);
-
-// 		var arr = data.Completed;
-// 		// console.log("Data in arr " + arr);
-
-// 		chrome.storage.sync.get("completed", function(data1) {
-// 			// console.log("Starting arr " + arr);
-
-// 			var i;
-// 			for(i = 0; i < data1.completed.length; i+=1) {
-// 				arr.push(data1.completed[i]);
-// 			}
-
-// 			// console.log("New arr " + arr);
-
-// 			if (arr.length > 0) {
-// 				chrome.storage.sync.remove('Completed');
-// 				chrome.storage.sync.set({'completed' : arr});
-				
-// 				// console.log("Upgrade from version 1.0 complete");
-
-// 				val = true;
-// 			}
-// 		});
-// 	});
-// 	// end support for upgrade from v1.0
-// }
+	chrome.storage.sync.get("version", function(data) {
+		console.log(data.version);
+		const version = data.version;
+		if (version == null || version == 'undefined' || version == NaN || version != "1.4") {
+			// update handling is needed
+			console.log("Upgrading from older version");
+		} else {
+			// no upgrade handling is needed.
+			console.log("Version is 1.4");
+			dfd.notify();
+		}
+	});
+}
 
 function refreshData() {
 
 	chrome.storage.sync.get("id", function(data) {
 		myId = data.id;
 		if (myId == null || myId == 'undefined' || myId == NaN) {
-			// console.log("My id is " + myId + " resetting it to 0");
-			myId = 0;
+			myId = 1;
 		}
-		// console.log(myId);
+	});
+
+	chrome.storage.sync.get("uuid", function(data) {
+		uuid = data.uuid;
+		if (uuid == null || uuid == 'undefined' || uuid == NaN) {
+			uuid = createUUID();
+			console.log("UUID is " + data.uuid + " setting it to " + uuid);
+		}
+		console.log("UUID is: " + uuid);
 	});
 
 	chrome.storage.sync.get("todo", function(data) {
 		var i;
-		for(i = 0; i < data.todo.length; i+=1){
-			todoArr.push(data.todo[i]);
+		for(i = 0; i < data.todo.length; i+=1) {
+			if (data.todo[i] == null) {
+				continue;
+			}
+			if (!('id' in data.todo[i])) {
+				data.todo[i].id = myId++;
+			}
+			if (!('lastUpdated' in data.todo[i])) {
+				const now = new Date(Date.now);
+				data.todo[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+			}
+
+			todoArr[data.todo[i].id] = data.todo[i];
 			createBlock("todo", data.todo[i]);
 		}
 	});
 	chrome.storage.sync.get("in_progress", function(data) {
 		var i;
 		for(i = 0; i < data.in_progress.length; i+=1){
-			inProgressArr.push(data.in_progress[i])
+			if (data.in_progress[i] == null) {
+				continue;
+			}
+			if (!('id' in data.in_progress[i])) {
+				data.in_progress[i].id = myId++;
+			}
+			if (!('lastUpdated' in data.in_progress[i])) {
+				const now = new Date(Date.now);
+				data.in_progress[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+			}
+
+			inProgressArr[data.in_progress[i].id] = data.in_progress[i];
 			createBlock("in_progress", data.in_progress[i]);
 		}
 	});
 	chrome.storage.sync.get("completed", function(data) {
 		var i;
 		for(i = 0; i < data.completed.length; i+=1){
-			completedArr.push(data.completed[i]);
+			if (data.completed[i] == null) {
+				continue;
+			}
+
+			if (!('id' in data.completed[i])) {
+				data.completed[i].id = myId++;
+			}
+			if (!('lastUpdated' in data.completed[i])) {
+				const now = new Date(Date.now);
+				data.completed[i].lastUpdated = $.datepicker.formatDate('mm/dd/yy', now);
+			} else {
+				var lastUpdated = new Date(data.completed[i].lastUpdated);
+				var now = new Date(Date.now());
+				const diff = (now-lastUpdated)/1000/60/60;
+				console.log('Id: ' + data.completed[i].id + ' last updated: ' + diff + ' hours back');				
+			}
+			
+			completedArr[data.completed[i].id] = data.completed[i];
 			createBlock("completed", data.completed[i]);
 		}
 	});
-
-	
 }
 
 function addNewTask() {
@@ -251,142 +236,134 @@ function addNewTask() {
 
 		var now = new Date(Date.now());
 		const created = $.datepicker.formatDate('mm/dd/yy', now);
-		const dueNew = due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0];
 
 		var val = {
-			"id": data + "-" + (myId+1).toString(10),
+			"id": myId.toString(10),
 			"data": data,
 			"created": created,
-			"due": due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0]
+			"due": due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0],
+			"lastUpdate": created
 		}
 
-		// var date1 = new Date(val.created);
-		// var date2 = new Date(val.due);
-		// console.log(date1);
-		// console.log(date2);
-		// console.log((date2-date1)/(1000));
-
-
-		todoArr.push(val);
-		createBlock("todo", val);
-		myId +=1;
+		todoArr[val.id] = val;
+		createBlock("todo", val, true);
+		myId += 1;
 		saveData();
 	}
 
 }
 
 function createBlock(location, val) {
+	createBlock(location, val, false);
+}
 
+function createBlock(location, val, top) {
 	const taskDiv = document.createElement('div');
 	taskDiv.className = "task";
 
-	document.getElementById(location).appendChild(taskDiv);
+	const locDiv = document.getElementById(location);
+	if (top) {
+		locDiv.insertBefore(taskDiv, locDiv.firstChild.nextSibling);
+	} else {
+		locDiv.appendChild(taskDiv);
+	}
 
 	const dataDiv = document.createElement('div');
 	dataDiv.className = "data";
 	dataDiv.id = "dataid";
 
 
-	var data = val.data;
-	// if (data == null || data == 'undefined') {
-	// 	data = val.toString();
-	// }
-	dataDiv.innerHTML = data;
+	dataDiv.innerHTML = val.data;
 	taskDiv.id = (val.id);
+
 	taskDiv.appendChild(dataDiv);
 
-	
 
+	const dueDiv = document.createElement('div');
+	dueDiv.className = "due";
+	taskDiv.appendChild(dueDiv);	
+	dueDiv.innerHTML = "Due: " + val.due;
 
-
-	const createdDiv = document.createElement('div');
-	var end = val.due;
-	
-	createdDiv.innerHTML = end;
-	createdDiv.className = "created";
-
-	taskDiv.appendChild(createdDiv);
-
+	// Calculate the color of the block.
 	var date1 = new Date(val.created);
 	var date2 = new Date(val.due);
-	// console.log(date1);
-	// console.log(date2);
-	// console.log((date2-date1)/(1000));
 
 	var animation = "myanimation " + ((date2-date1)/(1000) + 86400).toString() + "s 1";
-	var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
-
-	// console.log(animation);
-	// console.log(delay);
+	// var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
 
 	taskDiv.style.animation = animation;
-	taskDiv.style.animationDelay = delay;
+	// taskDiv.style.animationDelay = delay;
 }
 
 function saveData(event) {
-	// var arr1 = [];
-	// for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
-	// 	arr1.push(toJSON(document.getElementById("todo").children[currDiv]));
-	// }
-	// console.log(arr1);
+	var arr1 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
+		const id = document.getElementById("todo").children[currDiv].id;
+		arr1.push(todoArr[id]);
+	}
+	console.log(arr1);
 
-	// var arr2 = [];
-	// for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
-	// 	arr2.push(toJSON(document.getElementById("in_progress").children[currDiv]));
-	// }
+	var arr2 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
+		const id = document.getElementById("in_progress").children[currDiv].id;
+		arr2.push(inProgressArr[id]);
+	}
 
-	// var arr3 = [];
-	// for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1){
-	// 	arr3.push(toJSON(document.getElementById("completed").children[currDiv]));
-	// }
+	var arr3 = [];
+	for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
+		const id = document.getElementById("completed").children[currDiv].id;
+		arr3.push(completedArr[id]);
+	}
 
-	chrome.storage.sync.set({"todo" : todoArr});
-	chrome.storage.sync.set({"in_progress" : inProgressArr});
-	chrome.storage.sync.set({"completed" : completedArr});
+	chrome.storage.sync.set({"todo" : arr1});
+	chrome.storage.sync.set({"in_progress" : arr2});
+	chrome.storage.sync.set({"completed" : arr3});
 	chrome.storage.sync.set({"id" : myId});
+	chrome.storage.sync.set({"version" : "1.4"});
+	chrome.storage.sync.set({"uuid" : uuid});
 
-	// console.log(todoArr);
-	// console.log(inProgressArr);
-	// console.log(completedArr);
-	// console.log("saveData: " + myId.toString());
+	console.log(arr1);
+	console.log(arr2);
+	console.log(arr3);
+	console.log("saveData: UUID: " + uuid.toString());
 }
-
-// function toJSON(taskDiv) {
-// 	const data = taskDiv.childNodes[0].innerHTML;
-// 	const created = taskDiv.childNodes[1].innerHTML;
-// 	const invisible = taskDiv.childNodes[2].innerHTML;
-
-// 	var val = {
-// 		"data": data,
-// 		"created": created,
-// 		"invisible": invisible
-// 	}
-
-// 	// console.log(val);
-// 	return val;
-// }
 
 function checkStorage() {
 	chrome.storage.sync.get("todo", function(data) {
-		// console.log(data);
+		console.log(data);
 	});
 	chrome.storage.sync.get("in_progress", function(data) {
-		// console.log(data);
+		console.log(data);
 	});
 	chrome.storage.sync.get("completed", function(data) {
-		// console.log(data);
+		console.log(data);
 	});
 	chrome.storage.sync.get("id", function(data) {
-		// console.log(data);
+		console.log(data);
+	});
+
+	chrome.storage.sync.get("version", function(data) {
+		console.log(data);
 	});
 }
 
 function clearData(){
 	// console.log("Clearning data in storage");
-	todoArr = [];
-	inProgressArr = [];
-	completedArr = [];
-	chrome.storage.sync.set({'todo' : todoArr});
-	chrome.storage.sync.set({'in_progress' : inProgressArr});
-	chrome.storage.sync.set({'completed' : completedArr});
+	todoArr = {};
+	inProgressArr = {};
+	completedArr = {};
+	const emptyArr = [];
+	chrome.storage.sync.set({'todo' : emptyArr});
+	chrome.storage.sync.set({'in_progress' : emptyArr});
+	chrome.storage.sync.set({'completed' : emptyArr});
+}
+
+function createUUID(){
+    var dt = new Date().getTime();
+    var myuuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = (dt + Math.random()*16)%16 | 0;
+        dt = Math.floor(dt/16);
+        return (c=='x' ? r :(r&0x3|0x8)).toString(16);
+    });
+    return myuuid;
 }
