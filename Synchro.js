@@ -6,6 +6,11 @@ var completedArr = {};
 
 window.onload = function() {
 	// Handle upgrade from older version.
+	var manifestData = chrome.runtime.getManifest();
+	// console.log(manifestData.version);
+	document.getElementById("version").innerHTML = "Version: " + manifestData.version;
+
+
 	handleUpgrade();
 
 	// Retrieve data
@@ -325,6 +330,12 @@ function saveData(event) {
 	chrome.storage.sync.set({"version" : "1.4"});
 	chrome.storage.sync.set({"uuid" : uuid});
 
+	var dataPackage = [];
+	dataPackage.push(arr1);
+	dataPackage.push(arr2);
+	dataPackage.push(arr3);
+
+	chrome.runtime.sendMessage(dataPackage);
 	// console.log(arr1);
 	// console.log(arr2);
 	// console.log(arr3);

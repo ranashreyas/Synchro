@@ -21,6 +21,7 @@
 
 	/* height: 300px; */
 	/* overflow-y: scroll; */
+	margin-bottom: 15px;
 }
 
 html, body {
@@ -182,6 +183,12 @@ html, body {
 	position: absolute;
 	right: 0px;
 	top: 0px;
+}
+
+.version {
+	position: absolute;
+	left: 20px;
+	bottom: 0px;
 }
 
 /* [2] Transition property for smooth transformation of images */
