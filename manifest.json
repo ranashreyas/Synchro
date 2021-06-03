@@ -1,0 +1,18 @@
+{
+    "manifest_version": 2,
+    "name": "Synchro: Task Tracker for Students",
+    "version": "1.7",
+    "description": "Synchro is a simple and intuitive task tracker built specifically for students to stay focused and organized.",
+    "icons": { "128": "icon_128.png"},
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "synchro.html"
+    },
+    "permissions": [
+        "storage"
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}

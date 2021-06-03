@@ -1,0 +1,284 @@
+.parent {
+	display: flex;
+	font-family: sans-serif;
+	font-weight: bold;
+	width: 700px;
+	margin-top: 10px;
+	vertical-align: middle;
+
+
+/*	position: fixed;
+*/	background: white;
+	width: 100%;
+
+	/* overflow: hidden; */
+}
+
+.parent-boxes{
+	display: flex;
+	font-family: sans-serif;
+	font-weight: bold;
+
+	/* height: 300px; */
+	/* overflow-y: scroll; */
+	margin-bottom: 15px;
+}
+
+html, body {
+    max-width: 100%;
+	overflow: hidden;
+}
+
+.sortable {
+	background-color: #ffffff;
+	padding: 10px;
+	margin: 10px 10px 10px 10px;
+	border: 5px solid #B6E6FC;
+	border-radius: 20px;
+	shape-rendering: auto;
+	flex-basis: 100%;
+	flex-grow: 1;
+	width: 200px;
+	list-style-type: none;
+	margin: 0;
+	padding: 10px;
+	float: left;
+	margin-right: 10px;
+
+/* 
+	shape-rendering: auto;
+	flex-basis: 100%;
+	flex-grow: 1; */
+}
+
+.dropzone {
+	background-color: #ffffff;
+	/* flex-basis: 100%;
+	flex-grow: 1; */
+	padding: 10px;
+	margin: 10px 10px 10px 10px;
+	/* width: 200px; */
+
+	border: 5px solid #B6E6FC;
+	border-radius: 10px;
+	/* stroke-width: 5px;
+	stroke-linejoin: miter;
+	stroke-linecap: butt;
+	stroke-miterlimit: 4; */
+	shape-rendering: auto;
+	flex-basis: 100%;
+	flex-grow: 1;
+}
+
+.task {
+	background-color: #f0979286; 
+	opacity:0.85;
+	border: 2px solid #B6E6FC;
+	border-radius: 10px;
+	font-weight: normal;
+	/* padding: 3px; */
+	cursor: move;
+	/* width: 120px; */
+	font-size: 0.7em;
+
+	margin-bottom: 10px;
+	margin-top: 10px;
+	padding: 5px;
+	/* animation: myanimation 10s infinite;
+	animation-delay: -0s; */
+}
+
+@keyframes myanimation {
+	0% {background-color: #52e46680;}
+	60% {background-color:#52e46680;}
+	61%{background-color:rgba(253, 253, 127, 0.514);}
+	90%{background-color:rgba(253, 253, 127, 0.514);}
+	91% {background-color: #f0979286;}
+	100% {background-color: #f0979286;}
+}
+
+.due {
+	margin-top: 5px;
+	color: #878f99;
+	font-size: 90%;
+}
+
+.invisible {
+	margin-top: 0px;
+	color: black;
+	font-size: 10%;
+}
+
+.data {
+	margin-bottom: 5px;
+	color: black;
+	font-size: 140%;
+}
+
+.example-origin {
+	background-color: #fae77d;
+	flex-basis: 100%;
+	flex-grow: 1;
+	padding: 10px;
+}
+
+.task-input {
+	display: block;
+	margin-left: 10px;
+	margin-right: 10px;
+
+	border-radius: 10px;
+	font-weight: normal;
+	border-color: #afd2ac;
+	/* margin-bottom: 10px; */
+	margin-top: 10px;
+	padding: 10px;
+	width: 150px;
+	height: 10px;
+	cursor: text;
+}
+
+.due-input {
+	display: block;
+	margin-left: 10px;
+	margin-right: 10px;
+
+
+	border-radius: 10px;
+	font-weight: normal;
+	border-color: #afd2ac;
+	margin-top: 10px;
+	padding: 10px;
+	width: 150px;
+	height: 10px;
+	cursor: text;
+}
+
+.add-task {
+	margin-top: 8px;
+	background-color: #afd2ac;
+	/* border: 5px solid #B6E6FC; */
+	border-radius: 10px;
+	font-weight: normal;
+	padding: 9px 12px 13px 12px;
+	/* width: 200px; */
+	height: 10px;
+	cursor: pointer;
+	text-align: center;
+}
+/* 
+.due-by {
+} */
+
+.delete-task {
+	display: block;
+	border-radius: 10px;
+	font-weight: normal;
+	margin-top: 10px;
+	padding: 20px;
+	width: 30px;
+	height: 30px; 
+	/* cursor: pointer; */
+
+	position: absolute;
+	right: 0px;
+	top: 0px;
+}
+
+.version {
+	position: absolute;
+	left: 20px;
+	bottom: 0px;
+}
+
+/* [2] Transition property for smooth transformation of images */
+.delete-task img {
+  transition: transform .5s ease;
+}
+
+/* [3] Finally, transforming the image when container gets hovered */
+.delete-task:hover img {
+  transform: scale(1.5);
+}
+
+.trash-hover {
+  transition: transform .5s ease;
+  transform: scale(1.5);
+}
+
+.example-dropzone-2 {
+	background-color: #5b78b6;
+	flex-basis: 100%;
+	flex-grow: 1;
+	padding: 10px;
+}
+
+.topnav .search-container {
+  float: right;
+}
+
+.topnav input[type=text] {
+  padding: 6px;
+  margin-top: 8px;
+  font-size: 17px;
+  border: none;
+}
+
+.topnav .search-container button {
+  float: right;
+  padding: 6px 10px;
+  margin-top: 8px;
+  margin-right: 16px;
+  background: #ddd;
+  font-size: 17px;
+  border: none;
+  cursor: pointer;
+}
+
+.topnav .search-container button:hover {
+  background: #ccc;
+}
+
+/*.topnav input[type=text] {
+  float: right;
+  padding: 6px;
+  border: none;
+  margin-top: 8px;
+  margin-right: 16px;
+  font-size: 17px;
+}
+*/
+
+.grid-container {
+  	display: inline-grid;
+  	grid-template-columns: auto auto auto auto;
+/*  	
+  	background-color: #2196F3;
+  	padding: 2px;
+	grid-column-gap: 1px;
+	grid-row-gap: 1px;
+	grid-gap: 5px;
+*/
+}
+
+.grid-item-header {	
+	border: 1px solid rgba(0, 0, 0, 0.8);
+  	padding: 20px;
+  	font-size: 30px;
+  	text-align: center;
+  	grid-column-start: 1;
+  	grid-column-end: 5;
+}
+
+.grid-item {
+
+/*  
+	background-color: rgba(255, 255, 255, 0.8);
+*/  
+	
+	border: 1px solid rgba(0, 0, 0, 0.8);
+  	padding: 20px;
+  	font-size: 30px;
+  	text-align: center;
+}
+
