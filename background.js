@@ -1,45 +1,52 @@
+// "background": {
+//     "scripts": ["background.js"]
+// },
 // var d = new Date();
 // console.log(d);
-var timeouts = [];
-var taskDueDates = [];
 
 chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
-
-    for (var i=0; i<timeouts.length; i++) {
-        clearTimeout(timeouts[i]);
-    }
-    timeouts = [];
-    taskDueDates = [];
+    chrome.notifications.getAll((items) => {
+		if ( items ) {
+			for (let key in items) {
+				chrome.notifications.clear(key);
+			}
+		}
+	});
+    // console.log("recevied message");
+    // for (var i=0; i<timeouts.length; i++) {
+    //     clearTimeout(timeouts[i]);
+    // }
+    taskStarts = [];
+    taskDues = [];
 
     // console.log(response);
-    var time = 1000;
-    
+    var name = "";
     for (var col = 0; col < 2; col++){
         for(var i = 0; i < response[col].length; i++){
-            var name = response[col][i]['data'];
+            name += response[col][i]['data'] + ", ";
             // var message = name + " col: " + col.toString() + " pos: " + i.toString()
             // console.log(message);
-            // timeouts.push(
-            //     setTimeout(
-            //         function(){
-            //             alert(message);
-            //         },
-            //         time
-            //     )
-            // );
-            // time += 5000;
 
             var date1 = new Date(response[col][i]['created']);
             var date2 = new Date(response[col][i]['due']);
 
             var datePair = {
-                "start": date1,
-                "due": date2
+                "start": date1.toString(),
+                "due": date2.toString()
             };
-            console.log(datePair);
+            alreadyExists = false;
+            if(taskStarts.includes(datePair["start"]) && taskDues.includes(datePair["due"])){
+                alreadyExists = true;
+            } else {
+                taskStarts.push(datePair["start"]);
+                taskDues.push(datePair["due"]);
+            }
+            // console.log(taskStarts);
+            // console.log(taskDues);
 
-            if (taskDueDates.includes(datePair) == false){
-                taskDueDates.push(datePair);
+
+            if (!alreadyExists){
+                // taskDueDates.push(datePair);
                 console.log("pushed unique date");
                 var taskInterval = (date2-date1) + 86400000;
 
@@ -53,32 +60,54 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
                 var timeTil90 = task90-timePassedSinceStart;
                 var timeTilDue = taskInterval-timePassedSinceStart
 
-                timeTil60 = 1000;
-                timeTil90 = 5000;
-                timeTilDue = 10000;
+                // timeTil60 = 1000;
+                // timeTil90 = 5000;
+                // timeTilDue = 10000;
                 if(timeTil60 > 0){
-                    timeouts.push(setTimeout(function(){ alert("You are about halfway to your deadline for some tasks!"); }, timeTil60));
+                    // timeouts.push(setTimeout(function(){ alert("You are about halfway to your deadline for some tasks!"); }, 0));
+                    // timeouts.push(setTimeout(function(){ alert("You are about halfway to your deadline for some tasks!"); }, timeTil60));
+                    setTimeout(function() {
+                        notification("You are about halfway to your deadline for some tasks!");
+                    },timeTil60);
+
                 } else {
                     timeTil60 = -1;
+                    // setTimeout(function() {
+                    //     notification("You are about halfway to your deadline for some tasks!");
+                    // },3000);
                 }
 
                 if(timeTil90 > 0){
-                    timeouts.push(setTimeout(function(){ alert("Some tasks are almost due!"); }, timeTil90));
+                    setTimeout(function() {
+                        notification("Some tasks are almost due!");
+                    },timeTil90);
+                    // timeouts.push(setTimeout(function(){ alert("Some tasks are almost due!"); }, timeTil90));
                 } else {
                     timeTil90 = -1;
                 }
                 if(taskInterval-timePassedSinceStart > 0){
-                    timeouts.push(setTimeout(function(){ alert("Some tasks are due!"); }, timeTilDue));
+                    setTimeout(function() {
+                        notification("Some tasks are due!");
+                    },timeTilDue);
+                    // timeouts.push(setTimeout(function(){ alert("Some tasks are due!"); }, timeTilDue));
                 }
-                // console.log(timeTil60);
-                // console.log(timeTil90);
-                // console.log(taskInterval-timePassedSinceStart);
+                console.log(timeTil60);
+                console.log(timeTil90);
+                console.log(taskInterval-timePassedSinceStart);
             }
-            console.log(taskDueDates.length);
+            // console.log(taskDueDates.length);
         }
     }
 });
 
-// function myAlert(message){
-//     alert(message);
-// }
+function notification(message){
+    chrome.notifications.create(
+        {
+            title: "Task Reminder!",
+            message: message,
+            iconUrl: "images/synchro-logo.png",
+            type: "basic",
+            requireInteraction: true
+        }
+    );
+}

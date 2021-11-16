@@ -3,6 +3,7 @@ var myId = 0;
 var todoArr = {};
 var inProgressArr = {};
 var completedArr = {};
+var notificationConsent = true;
 
 window.onload = function() {
 	// Handle upgrade from older version.
@@ -10,6 +11,7 @@ window.onload = function() {
 	// console.log(manifestData.version);
 	document.getElementById("version").innerHTML = "Version: " + manifestData.version;
 
+	// notification();
 
 	handleUpgrade();
 
@@ -131,6 +133,10 @@ window.onload = function() {
         	addNewTask();
     	}
 	});
+}
+
+function toggleCheckbox(element) {
+	console.log("checkbox");
 }
 
 function handleUpgrade() {
@@ -336,9 +342,9 @@ function saveData(event) {
 	dataPackage.push(arr3);
 
 	chrome.runtime.sendMessage(dataPackage);
-	// console.log(arr1);
-	// console.log(arr2);
-	// console.log(arr3);
+	console.log(arr1);
+	console.log(arr2);
+	console.log(arr3);
 	// console.log("saveData: UUID: " + uuid.toString());
 }
 
@@ -380,4 +386,26 @@ function createUUID(){
         return (c=='x' ? r :(r&0x3|0x8)).toString(16);
     });
     return myuuid;
+}
+
+function notification(){
+	chrome.notifications.getAll((items) => {
+		if ( items ) {
+			for (let key in items) {
+				chrome.notifications.clear(key);
+			}
+		}
+	});
+	setTimeout(
+		chrome.notifications.create(
+			{
+				title: "Title",
+				message: "Synchro's message",
+				iconUrl: "images/synchro-logo.png",
+				type: "basic",
+			}
+		),
+		10000
+	)
+	
 }
