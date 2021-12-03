@@ -4,6 +4,7 @@ var todoArr = {};
 var inProgressArr = {};
 var completedArr = {};
 var notificationConsent = true;
+// this.use()
 
 window.onload = function() {
 	// Handle upgrade from older version.
@@ -156,6 +157,63 @@ function handleUpgrade() {
 	});
 }
 
+function getCanvasData() {
+	
+	let requestCourses = new XMLHttpRequest();
+	requestCourses.open("GET", "https://lgsuhsd.instructure.com/api/v1/courses?enrollment_state=active");
+	requestCourses.send();
+	requestCourses.onload = () => {
+		var n;
+		for(n = 0; n < JSON.parse(requestCourses.response).length; n++){
+			courseID = JSON.parse(requestCourses.response)[n].id;
+			let request = new XMLHttpRequest();
+			request.open("GET", "https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_" + courseID.toString());
+			// https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_23188
+			// https://reqres.in/api/users
+			request.send();
+			request.onload = () => {
+				data = JSON.parse(request.response);
+				console.log(data);
+				var i;
+				
+				for (i = 0; i < data.length; i++) {
+					taskName = data[i].title;
+					console.log(taskName);
+
+					contains = false;
+					var taskNum;
+
+					for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
+						const id = document.getElementById("todo").children[currDiv];
+						if(id.innerHTML.toString().includes(taskName)){
+							contains = true;
+						}
+					}
+					// console.log(arr1);
+				
+					for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
+						const id = document.getElementById("in_progress").children[currDiv];
+						if(id.innerHTML.toString().includes(taskName)){
+							contains = true;
+						}
+					}
+				
+					for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
+						const id = document.getElementById("completed").children[currDiv];
+						if(id.innerHTML.toString().includes(taskName)){
+							contains = true;
+						}
+					}
+
+					if(contains == false){
+						addNewTaskFromCanvas(taskName);
+					}
+				}
+			}
+		}
+	}
+}
+
 function refreshData() {
 
 	chrome.storage.sync.get("id", function(data) {
@@ -190,7 +248,6 @@ function refreshData() {
 
 			todoArr[data.todo[i].id] = data.todo[i];
 			createBlock("todo", data.todo[i]);
-			console.log(data.todo[i]);
 		}
 	});
 	chrome.storage.sync.get("in_progress", function(data) {
@@ -235,6 +292,32 @@ function refreshData() {
 			createBlock("completed", data.completed[i]);
 		}
 	});
+
+	console.log(todoArr);
+	console.log(inProgressArr);
+	console.log(completedArr);
+
+	getCanvasData();
+}
+
+function addNewTaskFromCanvas(taskName){
+	var now = new Date(Date.now());
+	const created = $.datepicker.formatDate('mm/dd/yy', now);
+	const due = $.datepicker.formatDate('mm/dd/yy', now);
+	// console.log(due);
+
+	var val = {
+		"id": myId.toString(10),
+		"data": taskName,
+		"created": created,
+		"due": due.split("/")[0] + "/" + due.split("/")[1] + "/" + due.split("/")[2],
+		"lastUpdate": created
+	}
+
+	todoArr[val.id] = val;
+	createBlock("todo", val, true);
+	myId += 1;
+	saveData();
 }
 
 function addNewTask() {
@@ -244,6 +327,7 @@ function addNewTask() {
 	if(document.getElementById("task-input").value.toString().length > 0) {
 		const data = document.getElementById("task-input").value;
 		const due = document.getElementById("due-input").value;
+		console.log(due);
 		document.getElementById("task-input").value = "";
 
 		var now = new Date(Date.now());

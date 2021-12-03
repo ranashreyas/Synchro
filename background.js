@@ -3,14 +3,21 @@
 // },
 // var d = new Date();
 // console.log(d);
+var timeouts = [];
 
 chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
+    for (var i=0; i<timeouts.length; i++) {
+        clearTimeout(timeouts[i]);
+    }
+    timeouts = [];
     chrome.notifications.getAll((items) => {
+        // console.log(items.length);
 		if ( items ) {
 			for (let key in items) {
 				chrome.notifications.clear(key);
 			}
 		}
+        // console.log(items.length);
 	});
     // console.log("recevied message");
     // for (var i=0; i<timeouts.length; i++) {
@@ -66,9 +73,11 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
                 if(timeTil60 > 0){
                     // timeouts.push(setTimeout(function(){ alert("You are about halfway to your deadline for some tasks!"); }, 0));
                     // timeouts.push(setTimeout(function(){ alert("You are about halfway to your deadline for some tasks!"); }, timeTil60));
-                    setTimeout(function() {
-                        notification("You are about halfway to your deadline for some tasks!");
-                    },timeTil60);
+                    timeouts.push(
+                        setTimeout(function() {
+                            notification("You are about halfway to your deadline for some tasks!");
+                        },timeTil60))
+                    ;
 
                 } else {
                     timeTil60 = -1;
@@ -78,17 +87,21 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
                 }
 
                 if(timeTil90 > 0){
-                    setTimeout(function() {
-                        notification("Some tasks are almost due!");
-                    },timeTil90);
+                    timeouts.push(
+                        setTimeout(function() {
+                            notification("Some tasks are almost due!");
+                        },timeTil90)
+                    );
                     // timeouts.push(setTimeout(function(){ alert("Some tasks are almost due!"); }, timeTil90));
                 } else {
                     timeTil90 = -1;
                 }
                 if(taskInterval-timePassedSinceStart > 0){
-                    setTimeout(function() {
-                        notification("Some tasks are due!");
-                    },timeTilDue);
+                    timeouts.push(
+                        setTimeout(function() {
+                            notification("Some tasks are due!");
+                        },timeTilDue)
+                    );
                     // timeouts.push(setTimeout(function(){ alert("Some tasks are due!"); }, timeTilDue));
                 }
                 console.log(timeTil60);
@@ -98,6 +111,8 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
             // console.log(taskDueDates.length);
         }
     }
+
+    console.log(timeouts);
 });
 
 function notification(message){

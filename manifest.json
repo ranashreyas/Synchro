@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Synchro: Task Tracker for Students",
-    "version": "1.7",
+    "version": "1.8",
     "description": "Synchro is a simple and intuitive task tracker built specifically for students to stay focused and organized.",
     "icons": { "128": "icon_128.png"},
     "browser_action": {
@@ -10,7 +10,8 @@
     },
     "permissions": [
         "storage",
-        "notifications"
+        "notifications",
+        "https://lgsuhsd.instructure.com/"
     ],
     "background": {
         "scripts": ["background.js"]
