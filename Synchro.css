@@ -5,7 +5,7 @@
 	width: 700px;
 	margin-top: 10px;
 	vertical-align: middle;
-
+	padding-bottom: 0px;
 
 /*	position: fixed;
 */	background: white;
@@ -167,11 +167,59 @@ html, body {
 	text-align: center;
 }
 
+.btn {
+	margin-top: 8px;
+	margin-left: 7px;
+	background-color: #b6b6b6;
+	/* border: 5px solid #B6E6FC; */
+	border-radius: 10px;
+	font-weight: normal;
+	padding: 6px 6px 0px 6px;
+	/* width: 200px; */
+	height: 27px;
+	cursor: pointer;
+	text-align: center;
+}
+
+/* The Modal (background) */
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	padding-top: 100px; /* Location of the box */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  }
+  
+  /* Modal Content */
+  .modal-content {
+	background-color: #fefefe;
+	margin: auto;
+	padding: 20px;
+	border: 1px solid #888;
+	width: 80%;
+  }
+  
+  /* The Close Button */
+  .close {
+	color: #aaaaaa;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
+  }
+
 .notifs-check {
 	margin-top: 16px;
 	/* border: 5px solid #B6E6FC; */
 	/* font-weight: normal; */
 	padding: 9px 12px 13px 12px;
+	/* margin-bottom: 20px; */
 	/* width: 200px; */
 	height: 10px;
 	cursor: pointer;
@@ -179,6 +227,7 @@ html, body {
 }
 .notifs-check-label {
 	margin-top: 7px;
+	/* margin-bottom: 20px; */
 	/* border: 5px solid #B6E6FC; */
 	/* font-weight: normal; */
 	padding: 9px 12px 13px 0px;
@@ -207,9 +256,9 @@ html, body {
 }
 
 .version {
-	position: absolute;
-	right: 20px;
-	bottom: 0px;
+	position: relative;
+	right: -590px;
+	bottom: 20px;
 }
 
 /* [2] Transition property for smooth transformation of images */

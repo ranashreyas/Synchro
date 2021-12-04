@@ -18,24 +18,39 @@
 
 <div id="confetti-canvas">
   
-  <div>
-    <div class="parent">
-      <input type="text" id="task-input" class="task-input" value="" placeholder="Task">
-      <h3 class="due-by">due by</h3>
-      <input type="date" id="due-input" class="due-input">
-      <div id="add-task" class="add-task">Add Task</div>
-<!--       <div id="clear" class="add-task">Clear Data</div>
-      <div id="checkStorage" class="add-task">Check Storage</div>
-      
- -->      
-      <!-- <input class="notifs-check" type="checkbox" id="sendNotifs" name="sendNotifs" checked>
-      <label class="notifs-check-label" for="sendNotifs">Send Notifications?</label> -->
-      <div id="deleteTask" class="delete-task ui-droppable">
-        <img src="images/trash.png" alt="trash">
-      </div>
-
-      
+  <div class="parent">
+    <input type="text" id="task-input" class="task-input" value="" placeholder="Task">
+    <h3 class="due-by">due by</h3>
+    <input type="date" id="due-input" class="due-input">
+    <div id="add-task" class="add-task">Add Task</div>
+    
+    <div id="Settings" class="btn">
+      <img src="images/settings.png" alt="Settings">
     </div>
+
+
+    <div id="myModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form>
+          <input type="checkbox" class="notifs-check" id="notifications" name="notifications">
+          <label for="notifications" class="notifs-check-label">Send task reminder notifications?</label><br>
+          
+          <input type="checkbox" class="notifs-check" id="canvasScraping" name="canvasScraping">
+          <label for="canvasScraping" class="notifs-check-label"> Allow Synchro to insert upcoming assignments from your Canvas LMS? (Synchro cannot view other Canvas data, nor does it send assignment details to 3rd parties)</label><br>
+          
+          <label for="future">How far in days would you like to insert upcoming assingments?</label>
+          <input type="number" class="notifs-check" id="future" name="future" min="1" max="10">
+        </form>
+      </div>
+    </div>
+
+
+    <div id="deleteTask" class="delete-task ui-droppable">
+      <img src="images/trash.png" alt="trash">
+    </div>
+
+    
   </div>
 
   <div class="parent-boxes">

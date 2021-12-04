@@ -51,6 +51,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
             // console.log(taskStarts);
             // console.log(taskDues);
 
+            // alreadyExists = false;
 
             if (!alreadyExists){
                 // taskDueDates.push(datePair);
