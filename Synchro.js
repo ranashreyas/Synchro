@@ -162,7 +162,7 @@ function getCanvasData() {
 	var now = new Date(Date.now());
 	var tomorrow = new Date(Date.now());
 	now.setDate(now.getDate() - 0);
-	tomorrow.setDate(tomorrow.getDate() + 1);
+	tomorrow.setDate(tomorrow.getDate() + 3);
 
 	var today = $.datepicker.formatDate('yy/mm/dd', now);
 	var tomorrow = $.datepicker.formatDate('yy/mm/dd', tomorrow);
@@ -192,14 +192,15 @@ function getCanvasData() {
 					taskName = data[i].title;
 					all_day_date = data[i].all_day_date;
 					courseName = data[i].context_name;
-					console.log(taskName + " " + all_day_date);
+					
 
 					contains = false;
 					var taskNum;
 
 					for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
 						const id = document.getElementById("todo").children[currDiv];
-						if(id.innerHTML.toString().toUpperCase().includes(taskName.toUpperCase())){
+						console.log(id.innerHTML.toString().toUpperCase() + "   vs.   " + taskName.replaceAll("&", "&AMP;").toUpperCase())
+						if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
 							contains = true;
 						}
 					}
@@ -207,19 +208,20 @@ function getCanvasData() {
 				
 					for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
 						const id = document.getElementById("in_progress").children[currDiv];
-						if(id.innerHTML.toString().toUpperCase().includes(taskName.toUpperCase())){
+						if(id.innerHTML.toString().replaceAll("&", "&AMP;").toUpperCase().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
 							contains = true;
 						}
 					}
 				
 					for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
 						const id = document.getElementById("completed").children[currDiv];
-						if(id.innerHTML.toString().toUpperCase().includes(taskName.toUpperCase())){
+						if(id.innerHTML.toString().replaceAll("&", "&AMP;").toUpperCase().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
 							contains = true;
 						}
 					}
 
 					if(contains == false){
+						console.log(taskName + " " + all_day_date);
 						includeCourseName = false;
 						if(includeCourseName == true){
 							addNewTaskFromCanvas(courseName + ": " + taskName, all_day_date);
@@ -446,9 +448,9 @@ function saveData(event) {
 	dataPackage.push(arr3);
 
 	chrome.runtime.sendMessage(dataPackage);
-	console.log(arr1);
-	console.log(arr2);
-	console.log(arr3);
+	// console.log(arr1);
+	// console.log(arr2);
+	// console.log(arr3);
 	// console.log("saveData: UUID: " + uuid.toString());
 }
 
