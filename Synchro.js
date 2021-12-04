@@ -158,6 +158,18 @@ function handleUpgrade() {
 }
 
 function getCanvasData() {
+
+	var now = new Date(Date.now());
+	var tomorrow = new Date(Date.now());
+	now.setDate(now.getDate() - 0);
+	tomorrow.setDate(tomorrow.getDate() + 1);
+
+	var today = $.datepicker.formatDate('yy/mm/dd', now);
+	var tomorrow = $.datepicker.formatDate('yy/mm/dd', tomorrow);
+	today = today.split("/")[0] + "-" + today.split("/")[1] + "-" + today.split("/")[2]
+	console.log(today);
+	tomorrow = tomorrow.split("/")[0] + "-" + tomorrow.split("/")[1] + "-" + tomorrow.split("/")[2]
+	console.log(tomorrow);
 	
 	let requestCourses = new XMLHttpRequest();
 	requestCourses.open("GET", "https://lgsuhsd.instructure.com/api/v1/courses?enrollment_state=active");
@@ -167,7 +179,7 @@ function getCanvasData() {
 		for(n = 0; n < JSON.parse(requestCourses.response).length; n++){
 			courseID = JSON.parse(requestCourses.response)[n].id;
 			let request = new XMLHttpRequest();
-			request.open("GET", "https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_" + courseID.toString());
+			request.open("GET", "https://lgsuhsd.instructure.com/api/v1/calendar_events?end_date=" + tomorrow + "&type=assignment&context_codes[]=course_" + courseID.toString());
 			// https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_23188
 			// https://reqres.in/api/users
 			request.send();
@@ -178,14 +190,16 @@ function getCanvasData() {
 				
 				for (i = 0; i < data.length; i++) {
 					taskName = data[i].title;
-					console.log(taskName);
+					all_day_date = data[i].all_day_date;
+					courseName = data[i].context_name;
+					console.log(taskName + " " + all_day_date);
 
 					contains = false;
 					var taskNum;
 
 					for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
 						const id = document.getElementById("todo").children[currDiv];
-						if(id.innerHTML.toString().includes(taskName)){
+						if(id.innerHTML.toString().toUpperCase().includes(taskName.toUpperCase())){
 							contains = true;
 						}
 					}
@@ -193,20 +207,26 @@ function getCanvasData() {
 				
 					for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
 						const id = document.getElementById("in_progress").children[currDiv];
-						if(id.innerHTML.toString().includes(taskName)){
+						if(id.innerHTML.toString().toUpperCase().includes(taskName.toUpperCase())){
 							contains = true;
 						}
 					}
 				
 					for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
 						const id = document.getElementById("completed").children[currDiv];
-						if(id.innerHTML.toString().includes(taskName)){
+						if(id.innerHTML.toString().toUpperCase().includes(taskName.toUpperCase())){
 							contains = true;
 						}
 					}
 
 					if(contains == false){
-						addNewTaskFromCanvas(taskName);
+						includeCourseName = false;
+						if(includeCourseName == true){
+							addNewTaskFromCanvas(courseName + ": " + taskName, all_day_date);
+						} else {
+							addNewTaskFromCanvas(taskName, all_day_date);
+						}
+						
 					}
 				}
 			}
@@ -300,17 +320,17 @@ function refreshData() {
 	getCanvasData();
 }
 
-function addNewTaskFromCanvas(taskName){
+function addNewTaskFromCanvas(taskName, dueDate){
 	var now = new Date(Date.now());
 	const created = $.datepicker.formatDate('mm/dd/yy', now);
-	const due = $.datepicker.formatDate('mm/dd/yy', now);
+	const due = dueDate;
 	// console.log(due);
 
 	var val = {
 		"id": myId.toString(10),
 		"data": taskName,
 		"created": created,
-		"due": due.split("/")[0] + "/" + due.split("/")[1] + "/" + due.split("/")[2],
+		"due": due.split("-")[1] + "/" + due.split("-")[2] + "/" + due.split("-")[0],
 		"lastUpdate": created
 	}
 
