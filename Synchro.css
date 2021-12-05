@@ -184,9 +184,9 @@ html, body {
 /* The Modal (background) */
 .modal {
 	display: none; /* Hidden by default */
-	position: fixed; /* Stay in place */
+	position: fixed;
 	z-index: 1; /* Sit on top */
-	padding-top: 100px; /* Location of the box */
+	padding-top: 5px; /* Location of the box */
 	left: 0;
 	top: 0;
 	width: 100%; /* Full width */
@@ -213,6 +213,18 @@ html, body {
 	font-weight: bold;
 	cursor: pointer;
   }
+
+.notifs-check-2 {
+	margin-top: 0px;
+	/* border: 5px solid #B6E6FC; */
+	/* font-weight: normal; */
+	padding: 9px 12px 13px 12px;
+	/* margin-bottom: 20px; */
+	/* width: 200px; */
+	height: 10px;
+	cursor: pointer;
+	text-align: center;
+}
 
 .notifs-check {
 	margin-top: 16px;
@@ -257,8 +269,8 @@ html, body {
 
 .version {
 	position: relative;
-	right: -590px;
-	bottom: 20px;
+	right: -600px;
+	bottom: 0px;
 }
 
 /* [2] Transition property for smooth transformation of images */
