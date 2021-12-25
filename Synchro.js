@@ -6,6 +6,7 @@ var completedArr = {};
 var notificationConsent = true;
 var canvasConsent = true;
 var futureDays = 1;
+var url;
 // this.use()
 
 window.onload = function() {
@@ -20,6 +21,17 @@ window.onload = function() {
 
 	// Retrieve data
 	refreshData();
+
+	// $(".data").ondblclick = function(event){
+	// 	ondblclick = event.contentEditable=true;
+	// 	event.classList.add("inEdit");
+	// };
+
+	document.onclick = function(event) {
+		// console.log("save data");
+		saveData();
+	}
+
 
 	document.getElementById("due-input").valueAsDate = new Date(Date.now());
 
@@ -70,6 +82,15 @@ window.onload = function() {
 		});
 
 		saveData();
+	});
+
+	document.getElementById("url").addEventListener('input', function() {
+		url = document.getElementById("url").value;
+		chrome.storage.sync.set({"url" : url});
+
+		chrome.storage.sync.get("url", function(data) {
+			console.log("url: " + data.url.toString());
+		});
 	});
 
 	document.getElementById("future").addEventListener('input', function() {
@@ -155,10 +176,7 @@ window.onload = function() {
  //   		}
 	// });
 
-	$('#dataid').droppable()
-		.dblclick(function() {
-			alert("double click");
-		});
+	
 
 	// Task remove listener
 	
@@ -216,91 +234,93 @@ function handleUpgrade() {
 }
 
 function getCanvasData() {
-	chrome.storage.sync.get("canvas", function(data) {
-		canvasConsent = data.canvas;
-		if(canvasConsent){
-			chrome.storage.sync.get("future", function(data) {
-				futureDays = data.future;
-				
-		
-				var now = new Date(Date.now());
-				var tomorrow = new Date(Date.now());
-		
-		
-				tomorrow.setDate(tomorrow.getDate() + parseInt(futureDays));
-		
-				var today = $.datepicker.formatDate('yy/mm/dd', now);
-				var tomorrow = $.datepicker.formatDate('yy/mm/dd', tomorrow);
-				today = today.split("/")[0] + "-" + today.split("/")[1] + "-" + today.split("/")[2]
-				console.log(today);
-				tomorrow = tomorrow.split("/")[0] + "-" + tomorrow.split("/")[1] + "-" + tomorrow.split("/")[2]
-				console.log(tomorrow);
-				
-				let requestCourses = new XMLHttpRequest();
-				requestCourses.open("GET", "https://lgsuhsd.instructure.com/api/v1/courses?enrollment_state=active");
-				requestCourses.send();
-				requestCourses.onload = () => {
-					var n;
-					for(n = 0; n < JSON.parse(requestCourses.response).length; n++){
-						courseID = JSON.parse(requestCourses.response)[n].id;
-						let request = new XMLHttpRequest();
-						request.open("GET", "https://lgsuhsd.instructure.com/api/v1/calendar_events?end_date=" + tomorrow + "&type=assignment&context_codes[]=course_" + courseID.toString());
-						// https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_23188
-						// https://reqres.in/api/users
-						request.send();
-						request.onload = () => {
-							data = JSON.parse(request.response);
-							console.log(data);
-							var i;
-							
-							for (i = 0; i < data.length; i++) {
-								taskName = data[i].title;
-								all_day_date = data[i].all_day_date;
-								courseName = data[i].context_name;
+	chrome.storage.sync.get("url", function(data) {
+		url = data.url;
+		chrome.storage.sync.get("canvas", function(data) {
+			canvasConsent = data.canvas;
+			if(canvasConsent){
+				chrome.storage.sync.get("future", function(data) {
+					futureDays = data.future;
+			
+					var now = new Date(Date.now());
+					var tomorrow = new Date(Date.now());
+			
+			
+					tomorrow.setDate(tomorrow.getDate() + parseInt(futureDays));
+			
+					var today = $.datepicker.formatDate('yy/mm/dd', now);
+					var tomorrow = $.datepicker.formatDate('yy/mm/dd', tomorrow);
+					today = today.split("/")[0] + "-" + today.split("/")[1] + "-" + today.split("/")[2]
+					console.log(today);
+					tomorrow = tomorrow.split("/")[0] + "-" + tomorrow.split("/")[1] + "-" + tomorrow.split("/")[2]
+					console.log(tomorrow);
+					
+					let requestCourses = new XMLHttpRequest();
+					requestCourses.open("GET", "https://"+url+".instructure.com/api/v1/courses?enrollment_state=active");
+					console.log("https://"+url+".instructure.com/api/v1/courses?enrollment_state=active");
+					requestCourses.send();
+					requestCourses.onload = () => {
+						var n;
+						for(n = 0; n < JSON.parse(requestCourses.response).length; n++){
+							courseID = JSON.parse(requestCourses.response)[n].id;
+							let request = new XMLHttpRequest();
+							request.open("GET", "https://"+url+".instructure.com/api/v1/calendar_events?end_date=" + tomorrow + "&type=assignment&context_codes[]=course_" + courseID.toString());
+							// https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_23188
+							// https://reqres.in/api/users
+							request.send();
+							request.onload = () => {
+								data = JSON.parse(request.response);
+								console.log(data);
+								var i;
 								
-		
-								contains = false;
-								var taskNum;
-		
-								for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
-									const id = document.getElementById("todo").children[currDiv];
-									if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
-										contains = true;
+								for (i = 0; i < data.length; i++) {
+									taskName = data[i].title;
+									all_day_date = data[i].all_day_date;
+									courseName = data[i].context_name;
+									
+			
+									contains = false;
+									var taskNum;
+			
+									for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
+										const id = document.getElementById("todo").children[currDiv];
+										if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+											contains = true;
+										}
 									}
-								}
-								// console.log(arr1);
-							
-								for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
-									const id = document.getElementById("in_progress").children[currDiv];
-									if(id.innerHTML.toString().replaceAll("&", "&AMP;").toUpperCase().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
-										contains = true;
+									// console.log(arr1);
+								
+									for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
+										const id = document.getElementById("in_progress").children[currDiv];
+										if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+											contains = true;
+										}
 									}
-								}
-							
-								for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
-									const id = document.getElementById("completed").children[currDiv];
-									if(id.innerHTML.toString().replaceAll("&", "&AMP;").toUpperCase().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
-										contains = true;
+								
+									for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
+										const id = document.getElementById("completed").children[currDiv];
+										if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+											contains = true;
+										}
 									}
-								}
-		
-								if(contains == false){
-									console.log(taskName + " " + all_day_date);
-									includeCourseName = false;
-									if(includeCourseName == true){
-										addNewTaskFromCanvas(courseName + ": " + taskName, all_day_date);
-									} else {
-										addNewTaskFromCanvas(taskName, all_day_date);
+			
+									if(contains == false){
+										console.log(taskName + " " + all_day_date);
+										includeCourseName = false;
+										if(includeCourseName == true){
+											addNewTaskFromCanvas(courseName + ": " + taskName, all_day_date);
+										} else {
+											addNewTaskFromCanvas(taskName, all_day_date);
+										}
 									}
 								}
 							}
 						}
 					}
-				}
-			});	
-		}
+				});	
+			}
+		});
 	});
-	
 }
 
 function refreshData() {
@@ -334,6 +354,18 @@ function refreshData() {
 			document.getElementById("canvasScraping").checked = false;
 		}
 		console.log(canvasConsent);
+	});
+
+	chrome.storage.sync.get("url", function(data) {
+		// console.log(data.future);
+		url = data.url;
+		if (url == null || url == 'undefined' || url == NaN) {
+			url = "lgsuhsd";
+			chrome.storage.sync.set({"url" : url});
+		}
+
+		document.getElementById("url").value = url;
+		// console.log(futureDays);
 	});
 
 	chrome.storage.sync.get("future", function(data) {
@@ -500,13 +532,42 @@ function createBlock(location, val, top) {
 	const dataDiv = document.createElement('div');
 	dataDiv.className = "data";
 	dataDiv.id = "dataid";
-
-
+	dataDiv.contentEditable = "true";
 	dataDiv.innerHTML = val.data;
 	taskDiv.id = (val.id);
 
 	taskDiv.appendChild(dataDiv);
 
+	dataDiv.addEventListener('input', function(e){
+        // console.log(dataDiv.parentElement.id);
+
+		if(todoArr[dataDiv.parentElement.id] != undefined){
+			todoArr[dataDiv.parentElement.id].data = dataDiv.innerHTML;
+		}
+		if(inProgressArr[dataDiv.parentElement.id] != undefined){
+			inProgressArr[dataDiv.parentElement.id].data = dataDiv.innerHTML;
+		}
+		if(completedArr[dataDiv.parentElement.id] != undefined){
+			completedArr[dataDiv.parentElement.id].data = dataDiv.innerHTML;
+		}
+		
+    });
+	taskDiv.addEventListener('contextmenu', event => event.preventDefault());
+	taskDiv.addEventListener("keydown", function(event) {
+		if (event.key === "Enter") {
+			console.log("Enter");
+			dataDiv.contentEditable = "false";
+			dataDiv.contentEditable = "true";
+        	// event.preventDefault();
+        	saveData();
+    	}
+	});
+	// var observer = new MutationObserver(function(mutations) {
+	// 	console.log('something changed');
+	// });
+	// observer.observe(dataDiv, { 
+	// 	attributes: true, 
+	// 	attributeFilter: ['contentEditable'] });
 
 	const dueDiv = document.createElement('div');
 	dueDiv.className = "due";
@@ -532,6 +593,7 @@ function saveData(event) {
 		var arr1 = [];
 		for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
 			const id = document.getElementById("todo").children[currDiv].id;
+			console.log(id);
 			arr1.push(todoArr[id]);
 		}
 		// console.log(arr1);
