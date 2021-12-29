@@ -1,0 +1,33 @@
+        "scripts": ["background.js"],
+
+
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBmNN3Zt0jfel1UTzb5pF-df0QLBCGjm9M",
+    authDomain: "synchro-42865.firebaseapp.com",
+    projectId: "synchro-42865",
+    storageBucket: "synchro-42865.appspot.com",
+    messagingSenderId: "115204736345",
+    appId: "1:115204736345:web:bfaaf98c0003872dc53848",
+    measurementId: "G-76WWP2JG74"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
+
+
+    "chrome_url_overrides":{
+        "newtab": "Synchro.html"
+    },

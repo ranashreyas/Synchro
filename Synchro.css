@@ -269,9 +269,10 @@ html, body {
 }
 
 .version {
-	position: relative;
-	right: -600px;
-	bottom: 0px;
+	font-weight: normal;
+	/* color: #878f99; */
+	font-size: 90%;
+	/* align: "right"; */
 }
 
 /* [2] Transition property for smooth transformation of images */

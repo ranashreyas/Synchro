@@ -1,8 +1,8 @@
 {
     "manifest_version": 2,
-    "name": "Synchro: Task Tracker for Students",
-    "version": "2.0",
-    "description": "Synchro is a simple and intuitive task tracker built specifically for students to stay focused and organized.",
+    "name": "Synchro: Productivity Manager for Students",
+    "version": "2.1",
+    "description": "Synchro is a simple and intuitive task tracker built specifically for students to stay productive and organized.",
     "icons": { "128": "icon_128.png"},
     "browser_action": {
         "default_icon": "icon.png",
@@ -11,10 +11,13 @@
     "permissions": [
         "storage",
         "notifications",
-        "https://*.instructure.com/"
+        "https://*.instructure.com/",
+        "identity",
+        "identity.email"
     ],
     "background": {
-        "scripts": ["background.js"]
+        "page": "background.html",
+        "persistent": false
     },
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+    "content_security_policy": "script-src 'self' https://www.gstatic.com https://*.firebaseio.com https://www.googleapis.com; object-src 'self'"
 }

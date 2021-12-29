@@ -55,7 +55,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
 
             if (!alreadyExists){
                 // taskDueDates.push(datePair);
-                console.log("pushed unique date");
+                // console.log("pushed unique date");
                 var taskInterval = (date2-date1) + 86400000;
 
                 var timeNow = Date.now();

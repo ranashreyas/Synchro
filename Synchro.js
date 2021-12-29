@@ -11,27 +11,20 @@ var url;
 
 window.onload = function() {
 	// Handle upgrade from older version.
+
 	var manifestData = chrome.runtime.getManifest();
+	var orig = document.getElementById("version").innerHTML.toString();
 	// console.log(manifestData.version);
-	document.getElementById("version").innerHTML = "Version: " + manifestData.version;
+	document.getElementById("version").innerHTML = manifestData.version + "______" + orig;
 
-	// notification();
-
+	//log user
 	handleUpgrade();
-
 	// Retrieve data
 	refreshData();
-
-	// $(".data").ondblclick = function(event){
-	// 	ondblclick = event.contentEditable=true;
-	// 	event.classList.add("inEdit");
-	// };
-
 	document.onclick = function(event) {
 		// console.log("save data");
 		saveData();
 	}
-
 
 	document.getElementById("due-input").valueAsDate = new Date(Date.now());
 
@@ -624,6 +617,27 @@ function saveData(event) {
 			dataPackage.push(arr3);
 		}
 		chrome.runtime.sendMessage(dataPackage);
+
+		// var dbDataPackage = "{command: 'AddInteraction', data: {'todo': " + todoArr.size + ", 'inProgress': " + inProgressArr.size + ", 'completed': " + completedArr.size + ", 'lastUpdated': " + new Date(Date.now()) + "} }";
+		// console.log(JSON.parse(JSON.stringify(dbDataPackage)));
+		chrome.identity.getProfileUserInfo(function(userInfo) {
+			chrome.runtime.sendMessage(
+				{
+					command: "AddInteraction",
+					data: {
+						"todo": arr1.length,
+						"inprogress": arr2.length,
+						"completed": arr3.length,
+						"lastUpdatedGMT": new Date(Date.now()),
+						"userEmail": userInfo.email.split('.')[0]
+					},
+					nodeName: uuid
+				}, (response) => {
+				//listen for response ..........
+			});
+		})
+		
+
 	});
 	// console.log(arr1);
 	// console.log(arr2);
@@ -670,25 +684,3 @@ function createUUID(){
     });
     return myuuid;
 }
-
-// function notification(){
-// 	chrome.notifications.getAll((items) => {
-// 		if ( items ) {
-// 			for (let key in items) {
-// 				chrome.notifications.clear(key);
-// 			}
-// 		}
-// 	});
-// 	setTimeout(
-// 		chrome.notifications.create(
-// 			{
-// 				title: "Title",
-// 				message: "Synchro's message",
-// 				iconUrl: "images/synchro-logo.png",
-// 				type: "basic",
-// 			}
-// 		),
-// 		10000
-// 	)
-	
-// }
