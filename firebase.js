@@ -11,18 +11,12 @@ import("https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js").then(
             appId: "1:115204736345:web:bfaaf98c0003872dc53848",
             measurementId: "G-76WWP2JG74"
         };
-        
-        // Initialize Firebase
-        // console.log(module);
-
         const app = firebase.initializeApp(firebaseConfig);
+
         import("https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js").then(
             (module) => {
-
-                // console.log(module);
-
                 chrome.runtime.onMessage.addListener((msg, sender, response) => {
-                    console.log(msg.data);
+                    console.log("firebase.js: " + msg);
                     if(msg.command == 'AddInteraction'){
                         try{
                             const db = module.getDatabase();
@@ -31,27 +25,24 @@ import("https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js").then(
                             module.get(InteractionsCount).then((snapshot) => {
                                 var data = parseInt(snapshot.val());
                                 data += 1;
-                                // console.log(data);
                                 module.set(module.ref(db), {
                                     'Interactions': data
                                 });
                             }).catch((error) => {
-                                console.error(error);
+                                console.log("firebase.js: " + error);
                             });
 
-                            chrome.identity.getProfileUserInfo(function(userInfo) {
-                                var user = userInfo.email.split('.')[0];
-                                const UserCount = module.ref(db, 'users/');
-                                module.get(UserCount).then((snapshot) => {
-                                    allUsercounts = snapshot.val();
+                            const UserCount = module.ref(db, 'users/');
 
-                                    var beginningUserObj = msg.data
-                                    allUsercounts[msg.nodeName] = beginningUserObj;
-                                    module.set(module.ref(db, 'users/'),allUsercounts);
-                                });
+                            module.get(UserCount).then((snapshot) => {
+                                allUsercounts = snapshot.val();
+
+                                var beginningUserObj = msg.data;
+                                allUsercounts[msg.nodeName] = beginningUserObj;
+                                module.set(module.ref(db, 'users/'),allUsercounts);
                             });
                         }catch(e){
-                            console.log(e);
+                            console.log("firebase.js: " + e);
                         }
                     }
                 });

@@ -9,6 +9,20 @@ var futureDays = 1;
 var url;
 // this.use()
 
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-26340974-1']);
+_gaq.push(['_setDomainName', 'none']);
+_gaq.push(['_trackPageview']);
+console.log(_gaq);
+
+(function() {
+	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	ga.src = 'https://ssl.google-analytics.com/ga.js';
+	var xyz = document.getElementsByTagName('script')[0]; xyz.parentNode.insertBefore(ga, xyz);
+})();
+
+
+
 window.onload = function() {
 	// Handle upgrade from older version.
 
@@ -115,7 +129,7 @@ window.onload = function() {
    			// console.log("Drag started");
    		},
 		stop: function(e,ui){
-
+			_gaq.push(['_trackEvent', 'moved_task', 'moved']);
 			// console.log(ui);
 
 			if(ui.item.context.parentElement == null) {
@@ -616,26 +630,26 @@ function saveData(event) {
 			dataPackage.push(arr2);
 			dataPackage.push(arr3);
 		}
-		chrome.runtime.sendMessage(dataPackage);
+		// chrome.runtime.sendMessage(dataPackage);
+
+		chrome.runtime.sendMessage(
+			{
+				command: "AddInteraction",
+				data: {
+					"todo": arr1.length,
+					"inprogress": arr2.length,
+					"completed": arr3.length,
+					"lastUpdatedGMT": new Date(Date.now())
+				},
+				nodeName: uuid,
+				notifSettings: dataPackage
+			}, (response) => {
+			//listen for response ..........
+		});
 
 		// var dbDataPackage = "{command: 'AddInteraction', data: {'todo': " + todoArr.size + ", 'inProgress': " + inProgressArr.size + ", 'completed': " + completedArr.size + ", 'lastUpdated': " + new Date(Date.now()) + "} }";
 		// console.log(JSON.parse(JSON.stringify(dbDataPackage)));
-		chrome.identity.getProfileUserInfo(function(userInfo) {
-			chrome.runtime.sendMessage(
-				{
-					command: "AddInteraction",
-					data: {
-						"todo": arr1.length,
-						"inprogress": arr2.length,
-						"completed": arr3.length,
-						"lastUpdatedGMT": new Date(Date.now()),
-						"userEmail": userInfo.email.split('.')[0]
-					},
-					nodeName: uuid
-				}, (response) => {
-				//listen for response ..........
-			});
-		})
+		
 		
 
 	});
@@ -683,4 +697,8 @@ function createUUID(){
         return (c=='x' ? r :(r&0x3|0x8)).toString(16);
     });
     return myuuid;
+}
+
+function googleAnalytics(){
+	
 }
