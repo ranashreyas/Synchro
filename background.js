@@ -6,19 +6,20 @@
 var timeouts = [];
 
 chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
+    console.log("background.js: " + response);
     for (var i=0; i<timeouts.length; i++) {
         clearTimeout(timeouts[i]);
     }
     timeouts = [];
     chrome.notifications.getAll((items) => {
         // console.log(items.length);
-		if ( items ) {
-			for (let key in items) {
-				chrome.notifications.clear(key);
-			}
-		}
+        if ( items ) {
+            for (let key in items) {
+                chrome.notifications.clear(key);
+            }
+        }
         // console.log(items.length);
-	});
+    });
     // console.log("recevied message");
     // for (var i=0; i<timeouts.length; i++) {
     //     clearTimeout(timeouts[i]);
@@ -27,6 +28,7 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
     taskDues = [];
 
     // console.log(response);
+    response = response.notifSettings;
     var name = "";
     for (var col = 0; col < 2; col++){
         for(var i = 0; i < response[col].length; i++){
@@ -105,15 +107,14 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
                     );
                     // timeouts.push(setTimeout(function(){ alert("Some tasks are due!"); }, timeTilDue));
                 }
-                console.log(timeTil60);
-                console.log(timeTil90);
-                console.log(taskInterval-timePassedSinceStart);
+                console.log("background.js: " + timeTil60);
+                console.log("background.js: " + timeTil90);
+                console.log("background.js: " + taskInterval-timePassedSinceStart);
             }
             // console.log(taskDueDates.length);
         }
     }
-
-    console.log(timeouts);
+    console.log("background.js: " + timeouts.toString());
 });
 
 function notification(message){
