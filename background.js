@@ -6,7 +6,7 @@
 var timeouts = [];
 
 chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
-    console.log("background.js: " + response);
+    // console.log("background.js: " + response);
     for (var i=0; i<timeouts.length; i++) {
         clearTimeout(timeouts[i]);
     }
@@ -107,14 +107,14 @@ chrome.runtime.onMessage.addListener(function(response, sender, sendResponse) {
                     );
                     // timeouts.push(setTimeout(function(){ alert("Some tasks are due!"); }, timeTilDue));
                 }
-                console.log("background.js: " + timeTil60);
-                console.log("background.js: " + timeTil90);
-                console.log("background.js: " + taskInterval-timePassedSinceStart);
+                console.log(timeTil60);
+                console.log(timeTil90);
+                console.log(taskInterval-timePassedSinceStart);
             }
             // console.log(taskDueDates.length);
         }
     }
-    console.log("background.js: " + timeouts.toString());
+    // console.log("background.js: " + timeouts);
 });
 
 function notification(message){

@@ -7,13 +7,14 @@ var notificationConsent = true;
 var canvasConsent = true;
 var futureDays = 1;
 var url;
+var colors = ["Blue", "Purple", "Maroon", "Green", "Black"];
 // this.use()
 
 var _gaq = _gaq || [];
 _gaq.push(['_setAccount', 'UA-26340974-1']);
 _gaq.push(['_setDomainName', 'none']);
 _gaq.push(['_trackPageview']);
-console.log(_gaq);
+// console.log(_gaq);
 
 (function() {
 	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -139,7 +140,7 @@ window.onload = function() {
 				delete inProgressArr[removableId];
 				delete completedArr[removableId];
 				ui.item.remove();
-				saveData(e);
+				saveData();
 				return;
 			}
 
@@ -170,7 +171,7 @@ window.onload = function() {
 				completedArr[id] = item;
 			}
 
-			saveData(e);
+			saveData();
     	}
 	});
 
@@ -242,7 +243,8 @@ function handleUpgrade() {
 
 function getCanvasData() {
 	chrome.storage.sync.get("url", function(data) {
-		url = data.url;
+		url = data.url.split(",");
+		console.log(url);
 		chrome.storage.sync.get("canvas", function(data) {
 			canvasConsent = data.canvas;
 			if(canvasConsent){
@@ -258,72 +260,158 @@ function getCanvasData() {
 					var today = $.datepicker.formatDate('yy/mm/dd', now);
 					var tomorrow = $.datepicker.formatDate('yy/mm/dd', tomorrow);
 					today = today.split("/")[0] + "-" + today.split("/")[1] + "-" + today.split("/")[2]
-					console.log(today);
+					// console.log(today);
 					tomorrow = tomorrow.split("/")[0] + "-" + tomorrow.split("/")[1] + "-" + tomorrow.split("/")[2]
-					console.log(tomorrow);
-					
-					let requestCourses = new XMLHttpRequest();
-					requestCourses.open("GET", "https://"+url+".instructure.com/api/v1/courses?enrollment_state=active");
-					console.log("https://"+url+".instructure.com/api/v1/courses?enrollment_state=active");
-					requestCourses.send();
-					requestCourses.onload = () => {
-						var n;
-						for(n = 0; n < JSON.parse(requestCourses.response).length; n++){
-							courseID = JSON.parse(requestCourses.response)[n].id;
-							let request = new XMLHttpRequest();
-							request.open("GET", "https://"+url+".instructure.com/api/v1/calendar_events?end_date=" + tomorrow + "&type=assignment&context_codes[]=course_" + courseID.toString());
-							// https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_23188
-							// https://reqres.in/api/users
-							request.send();
-							request.onload = () => {
-								data = JSON.parse(request.response);
-								console.log(data);
-								var i;
-								
-								for (i = 0; i < data.length; i++) {
-									taskName = data[i].title;
-									all_day_date = data[i].all_day_date;
-									courseName = data[i].context_name;
+					// console.log(tomorrow);
+
+					for (var i = 0; i < url.length; i++){
+						var currUrl = url[i].trim();
+
+						let requestCourses = new XMLHttpRequest();
+						requestCourses.open("GET", "https://"+currUrl+"/api/v1/courses?enrollment_state=active");
+						console.log("https://"+currUrl+"/api/v1/courses?enrollment_state=active");
+
+						requestCourses.send();
+						requestCourses.onload = () => {
+							var n;
+							var colorID = 0;
+							// console.log(currUrl + ": ");
+							console.log(JSON.parse(requestCourses.response));
+							for(n = 0; n < JSON.parse(requestCourses.response).length; n++){
+								courseID = JSON.parse(requestCourses.response)[n].id;
+								var correctedUrl = JSON.parse(requestCourses.response)[n].calendar.ics.split("/")[2]
+
+								let request = new XMLHttpRequest();
+								request.open("GET", "https://"+correctedUrl+"/api/v1/calendar_events?end_date=" + tomorrow + "&type=assignment&context_codes[]=course_" + courseID.toString());
+								console.log("https://"+correctedUrl+"/api/v1/calendar_events?end_date=" + tomorrow + "&type=assignment&context_codes[]=course_" + courseID.toString())
+								// https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_23188
+								// https://reqres.in/api/users
+								request.send();
+								request.onload = () => {
+									data = JSON.parse(request.response);
+									// console.log(currUrl + ": ")
+									// console.log(data);
+									var i;
 									
-			
-									contains = false;
-									var taskNum;
-			
-									for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
-										const id = document.getElementById("todo").children[currDiv];
-										if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
-											contains = true;
+									for (i = 0; i < data.length; i++) {
+										taskName = data[i].title;
+										all_day_date = data[i].all_day_date;
+										courseName = data[i].context_name;
+										
+				
+										contains = false;
+										var taskNum;
+				
+										for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
+											const id = document.getElementById("todo").children[currDiv];
+											if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+												contains = true;
+											}
 										}
-									}
-									// console.log(arr1);
-								
-									for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
-										const id = document.getElementById("in_progress").children[currDiv];
-										if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
-											contains = true;
+										// console.log(arr1);
+									
+										for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
+											const id = document.getElementById("in_progress").children[currDiv];
+											if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+												contains = true;
+											}
 										}
-									}
-								
-									for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
-										const id = document.getElementById("completed").children[currDiv];
-										if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
-											contains = true;
+									
+										for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
+											const id = document.getElementById("completed").children[currDiv];
+											if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+												contains = true;
+											}
 										}
-									}
-			
-									if(contains == false){
-										console.log(taskName + " " + all_day_date);
-										includeCourseName = false;
-										if(includeCourseName == true){
-											addNewTaskFromCanvas(courseName + ": " + taskName, all_day_date);
-										} else {
-											addNewTaskFromCanvas(taskName, all_day_date);
+				
+										if(contains == false){
+											console.log(taskName + " " + all_day_date);
+											includeCourseName = true;
+											if(includeCourseName == true){
+												addNewTaskFromCanvas("<b style='color:" + colors[colorID] +" '>" + courseName + "</b>: " + taskName, all_day_date);
+											} else {
+												addNewTaskFromCanvas(taskName, all_day_date);
+											}
 										}
 									}
 								}
+								colorID++;
+								colorID = (colorID % colors.length);
 							}
 						}
 					}
+					
+					
+
+					// let requestCoursesBerkeley = new XMLHttpRequest();
+					// requestCoursesBerkeley.open("GET", "https://bcourses.berkeley.edu/api/v1/courses?enrollment_state=active");
+					// console.log("https://bcourses.berkeley.edu/api/v1/courses?enrollment_state=active");
+
+					
+
+					// requestCoursesBerkeley.send();
+					// requestCoursesBerkeley.onload = () => {
+					// 	var n;
+					// 	var colorID = 0;
+					// 	for(n = 0; n < JSON.parse(requestCoursesBerkeley.response).length; n++){
+					// 		courseID = JSON.parse(requestCoursesBerkeley.response)[n].id;
+
+					// 		let request = new XMLHttpRequest();
+					// 		request.open("GET", "https://bcourses.berkeley.edu/api/v1/calendar_events?end_date=" + tomorrow + "&type=assignment&context_codes[]=course_" + courseID.toString());
+					// 		// https://lgsuhsd.instructure.com/api/v1/calendar_events?type=assignment&context_codes[]=course_23188
+					// 		// https://reqres.in/api/users
+					// 		request.send();
+					// 		request.onload = () => {
+					// 			data = JSON.parse(request.response);
+					// 			console.log(data);
+					// 			var i;
+								
+					// 			for (i = 0; i < data.length; i++) {
+					// 				taskName = data[i].title;
+					// 				all_day_date = data[i].all_day_date;
+					// 				courseName = data[i].context_name;
+									
+			
+					// 				contains = false;
+					// 				var taskNum;
+			
+					// 				for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
+					// 					const id = document.getElementById("todo").children[currDiv];
+					// 					if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+					// 						contains = true;
+					// 					}
+					// 				}
+					// 				// console.log(arr1);
+								
+					// 				for(var currDiv = 0; currDiv < document.getElementById("in_progress").children.length; currDiv += 1){
+					// 					const id = document.getElementById("in_progress").children[currDiv];
+					// 					if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+					// 						contains = true;
+					// 					}
+					// 				}
+								
+					// 				for(var currDiv = 0; currDiv < document.getElementById("completed").children.length; currDiv += 1) {
+					// 					const id = document.getElementById("completed").children[currDiv];
+					// 					if(id.innerHTML.toString().toUpperCase().includes(taskName.replaceAll("&", "&AMP;").toUpperCase())){
+					// 						contains = true;
+					// 					}
+					// 				}
+			
+					// 				if(contains == false){
+					// 					console.log(taskName + " " + all_day_date);
+					// 					includeCourseName = true;
+					// 					if(includeCourseName == true){
+					// 						addNewTaskFromCanvas("<b style='color:" + colors[colorID] +" '>" + courseName + "</b>: " + taskName, all_day_date);
+					// 					} else {
+					// 						addNewTaskFromCanvas(taskName, all_day_date);
+					// 					}
+					// 				}
+					// 			}
+					// 		}
+					// 		colorID++;
+					// 		colorID = (colorID % colors.length);
+					// 	}
+					// }
 				});	
 			}
 		});
@@ -333,7 +421,7 @@ function getCanvasData() {
 function refreshData() {
 
 	chrome.storage.sync.get("notifications", function(data) {
-		console.log(data.notifications);
+		// console.log(data.notifications);
 		notificationConsent = data.notifications;
 		if (notificationConsent == null || notificationConsent == 'undefined' || notificationConsent == NaN) {
 			notificationConsent = true;
@@ -360,7 +448,7 @@ function refreshData() {
 		} else {
 			document.getElementById("canvasScraping").checked = false;
 		}
-		console.log(canvasConsent);
+		// console.log(canvasConsent);
 	});
 
 	chrome.storage.sync.get("url", function(data) {
@@ -487,7 +575,7 @@ function addNewTaskFromCanvas(taskName, dueDate){
 	}
 
 	todoArr[val.id] = val;
-	createBlock("todo", val, true);
+	createBlock("todo", val, false, true);
 	myId += 1;
 	saveData();
 }
@@ -514,18 +602,18 @@ function addNewTask() {
 		}
 
 		todoArr[val.id] = val;
-		createBlock("todo", val, true);
+		createBlock("todo", val, true, false);
 		myId += 1;
 		saveData();
 	}
 
 }
 
-function createBlock(location, val) {
-	createBlock(location, val, false);
-}
+// function createBlock(location, val) {
+// 	createBlock(location, val, false);
+// }
 
-function createBlock(location, val, top) {
+function createBlock(location, val, top, fromCanvas) {
 	const taskDiv = document.createElement('div');
 	taskDiv.className = "task";
 
@@ -588,19 +676,20 @@ function createBlock(location, val, top) {
 	// console.log((date2-date1)/(1000));
 
 	var animation = "myanimation " + ((date2-date1)/(1000) + 86400).toString() + "s 1";
+
 	var delay = ((new Date(Date.now()) - date1)/-1000).toString() + "s";
 
 	taskDiv.style.animation = animation;
 	taskDiv.style.animationDelay = delay;
 }
 
-function saveData(event) {
+function saveData() {
 	chrome.storage.sync.get("notifications", function(data) {
 		notificationConsent = data.notifications;
 		var arr1 = [];
 		for(var currDiv = 0; currDiv < document.getElementById("todo").children.length; currDiv += 1){
 			const id = document.getElementById("todo").children[currDiv].id;
-			console.log(id);
+			// console.log(id);
 			arr1.push(todoArr[id]);
 		}
 		// console.log(arr1);
@@ -644,8 +733,9 @@ function saveData(event) {
 				nodeName: uuid,
 				notifSettings: dataPackage
 			}, (response) => {
-			//listen for response ..........
-		});
+				console.log(dataPackage);
+			}
+		);
 
 		// var dbDataPackage = "{command: 'AddInteraction', data: {'todo': " + todoArr.size + ", 'inProgress': " + inProgressArr.size + ", 'completed': " + completedArr.size + ", 'lastUpdated': " + new Date(Date.now()) + "} }";
 		// console.log(JSON.parse(JSON.stringify(dbDataPackage)));

@@ -97,6 +97,15 @@ html, body {
 	100% {background-color: #f0979286;}
 }
 
+@keyframes canvasAnimation {
+	0% {background-color: #B6E6FC;}
+	60% {background-color:#B6E6FC;}
+	61%{background-color: #B6E6FC;}
+	90%{background-color:#B6E6FC;}
+	91% {background-color: #B6E6FC;}
+	100% {background-color: #B6E6FC;}
+}
+
 .due {
 	margin-top: 5px;
 	color: #878f99;

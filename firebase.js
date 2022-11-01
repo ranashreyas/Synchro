@@ -16,7 +16,7 @@ import("https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js").then(
         import("https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js").then(
             (module) => {
                 chrome.runtime.onMessage.addListener((msg, sender, response) => {
-                    console.log("firebase.js: " + msg);
+                    console.log(msg);
                     if(msg.command == 'AddInteraction'){
                         try{
                             const db = module.getDatabase();
